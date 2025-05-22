@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * Definicion de tablas mediante JS
+ */
+model Usuario {
+  id            Int     @id @default(autoincrement())
+  nombreUsuario String  @unique @db.VarChar(100)
+  password      String  @db.VarChar(100)
+  email         String  @db.VarChar(100)
+  nombre        String  @db.VarChar(100)
+  apellido      String  @db.VarChar(100)
+  telefono      String  @db.VarChar(50)
+  cuota         Cuota[]
+}
+
+model Cuota {
+  id               Int            @id @default(autoincrement())
+  fechaInicio      DateTime       @unique
+  fechaVencimiento DateTime
+  montoTotal       Decimal        @db.Decimal(10, 2)
+  idUsuario        Int
+  usuario          Usuario        @relation(fields: [idUsuario], references: [id])
+  lineaDeCuota     LineaDeCuota[]
+  valorCuota       ValorCuota[]
+}
+
+model LineaDeCuota {
+  id        Int
+  idCuota   Int
+  fechaPago DateTime @unique
+  monto     Decimal  @db.Decimal(10, 2)
+  cuota     Cuota    @relation(fields: [idCuota], references: [id])
+
+  @@id([id, idCuota])
+}
+
+model ValorCuota {
+  id          Int
+  idCuota     Int
+  precio      Decimal  @db.Decimal(10, 2)
+  fechaCambio DateTime @unique
+  cuota       Cuota    @relation(fields: [idCuota], references: [id])
+
+  @@id([id, idCuota])
+}
