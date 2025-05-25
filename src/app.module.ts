@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { CuotaModule } from './cuota/cuota.module';
 
 @Module({
-  imports: [],
+  imports: [CuotaModule],
   controllers: [],
   providers: [],
 })
