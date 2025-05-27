@@ -157,7 +157,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\Proyecto Admin Canchas 2\\proyect-admin-canchas\\generated\\prisma",
+      "value": "C:\\Users\\GAMER\\Desktop\\AdministracionCanchaTenis-Backend\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -171,7 +171,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\Proyecto Admin Canchas 2\\proyect-admin-canchas\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\GAMER\\Desktop\\AdministracionCanchaTenis-Backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -185,6 +185,7 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

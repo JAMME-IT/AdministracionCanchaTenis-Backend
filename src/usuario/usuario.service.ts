@@ -12,7 +12,7 @@ export class UsuarioService {
   }
 
   async findAll() {
-    return this.prisma.usuario.findMany();
+    return this.prisma.usuario.findMany()
   }
 
   async findOne(id: number) {

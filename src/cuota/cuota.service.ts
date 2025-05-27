@@ -9,7 +9,7 @@ export class CuotaService {
   }
 
   findAll() {
-    return `This action returns all cuota`;
+    return `Aca se muestran todas las cuotas`;
   }
 
   findOne(id: number) {
