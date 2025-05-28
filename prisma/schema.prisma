@@ -37,18 +37,16 @@ model Cuota{
 }
 
 model LineaDeCuota{
-  id Int
+  id Int @id @default(autoincrement())
   idCuota Int
-  @@id([id,idCuota])
   fechaPago DateTime @unique
   monto     Decimal @db.Decimal(10,2)
   cuota     Cuota    @relation(fields: [idCuota], references: [id])
 }
 
 model ValorCuota{
-  id Int
+  id Int @id @default(autoincrement())
   idCuota Int
-  @@id([id,idCuota])
   precio Decimal @db.Decimal(10,2)
   fechaCambio DateTime @unique
   cuota     Cuota    @relation(fields: [idCuota], references: [id])

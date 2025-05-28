@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { GetUsuarioDto } from './dto/get-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -13,8 +14,10 @@ export class UsuarioService {
   }
 
 // Encontrar todos los usuarios
-  async findAll() {
-    return this.prisma.usuario.findMany()
+  async findAll(getUsuarioDto: GetUsuarioDto) {
+    // return this.prisma.usuario.findMany()
+    const usuarios = await this.prisma.usuario.findMany()
+    return usuarios
   }
 
 // Encontrar 1 usuario por ID
@@ -32,7 +35,6 @@ async findAllByNombre(nombre: string) {
     where: {
       nombre: {
         contains: nombre,
-        // mode: 'insensitive',
       },
     },
   });
@@ -70,3 +72,4 @@ async findAllByNombre(nombre: string) {
     }
   }
 }
+

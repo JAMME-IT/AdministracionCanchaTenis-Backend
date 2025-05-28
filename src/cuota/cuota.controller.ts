@@ -3,6 +3,7 @@ import { CuotaService } from './cuota.service';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 
+
 @Controller('cuota')
 export class CuotaController {
   constructor(private readonly cuotaService: CuotaService) {}
@@ -16,6 +17,7 @@ export class CuotaController {
   findAll() {
     return this.cuotaService.findAll();
   }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

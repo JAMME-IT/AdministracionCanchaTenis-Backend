@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLineaCuotaDto } from './dto/create-linea-cuota.dto';
 import { UpdateLineaCuotaDto } from './dto/update-linea-cuota.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LineaCuotaService {
-  create(createLineaCuotaDto: CreateLineaCuotaDto) {
-    return 'This action adds a new lineaCuota';
+  constructor(private prisma: PrismaService) {}
+  async create(cuotaId: number, createLineaCuotaDto: CreateLineaCuotaDto) {
+    const cuota = await this.prisma.cuota.findUnique({where: {id: cuotaId}})
+    if (!cuota) {
+      throw new NotFoundException('No se encontró la cuota especificada');      
+  }
+    const newLinea = await this.prisma.lineaDeCuota.create({
+      data:{
+        ...createLineaCuotaDto, idCuota: cuotaId}});  
   }
 
   findAll() {
-    return `This action returns all lineaCuota`;
+    return this.prisma.lineaDeCuota.findMany();
   }
 
+ async findLineaCuotaByCuotaId(cuotaId: number) {
+  const lineaCuota = await this.prisma.lineaDeCuota.findMany({
+    where: {
+      idCuota: cuotaId,
+    },
+  });
+  if (!lineaCuota) {
+    throw new NotFoundException('No se encontró la línea de cuota para la cuota especificada');
+  }
+  return 
+    lineaCuota;
+} 
+
   findOne(id: number) {
-    return `This action returns a #${id} lineaCuota`;
+    return this.prisma.lineaDeCuota.findUnique({ where: { id } });
   }
 
   update(id: number, updateLineaCuotaDto: UpdateLineaCuotaDto) {
-    return `This action updates a #${id} lineaCuota`;
+    return this.update(id, updateLineaCuotaDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} lineaCuota`;
+    return this.prisma.lineaDeCuota.delete({ where: { id } });
   }
 }
