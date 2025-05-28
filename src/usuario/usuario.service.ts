@@ -7,13 +7,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UsuarioService {
   constructor(private prisma: PrismaService) {}
 
+  // Crear usuario
   async create(createUsuarioDto: CreateUsuarioDto) {
     return this.prisma.usuario.create({ data: createUsuarioDto });
   }
 
+// Encontrar todos los usuarios
   async findAll() {
     return this.prisma.usuario.findMany()
   }
+
+// Encontrar 1 usuario por ID
 
   async findOne(id: number) {
     const usuario = await this.prisma.usuario.findUnique({ where: { id } });
@@ -21,6 +25,25 @@ export class UsuarioService {
     return usuario;
   }
 
+// Encontrar todos los usuarios por nombre (muestra una lista de nombres que coinciden)
+
+async findAllByNombre(nombre: string) {
+  const usuarios = await this.prisma.usuario.findMany({
+    where: {
+      nombre: {
+        contains: nombre,
+        // mode: 'insensitive',
+      },
+    },
+  });
+  if (usuarios.length === 0) {
+    throw new NotFoundException('No se encontraron usuarios con ese nombre');
+  }
+  return usuarios;
+}
+
+
+// actualizar usuario por ID
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
     try {
       return await this.prisma.usuario.update({
@@ -35,6 +58,7 @@ export class UsuarioService {
     }
   }
 
+  // eliminar usuario 
   async remove(id: number) {
     try {
       return await this.prisma.usuario.delete({ where: { id } });

@@ -1,4 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateCuotaDto } from './create-cuota.dto';
 
-export class UpdateCuotaDto extends PartialType(CreateCuotaDto) {}
+export class UpdateCuotaDto extends PartialType(CreateCuotaDto) {
+  fechaInicio:Date;
+  fechaVencimiento: Date;
+  montoTotal: number
+}
