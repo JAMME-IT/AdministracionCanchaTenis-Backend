@@ -5,11 +5,14 @@ import { UpdateLineaCuotaDto } from './dto/update-linea-cuota.dto';
 
 @Controller('linea-cuota')
 export class LineaCuotaController {
-  constructor(private readonly lineaCuotaService: LineaCuotaService) {}
+constructor(private readonly lineaCuotaService: LineaCuotaService) {}
 
-  @Post()
-  create(@Body() createLineaCuotaDto: CreateLineaCuotaDto) {
-    return this.lineaCuotaService.create(createLineaCuotaDto);
+  @Post(":cuotaId")
+  create(
+    @Param('cuotaId') cuotaId:string,
+    @Body() createLineaCuotaDto: CreateLineaCuotaDto) {
+    
+    return this.lineaCuotaService.create(+cuotaId,createLineaCuotaDto);
   }
 
   @Get()

@@ -6,24 +6,34 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class LineaCuotaService {
   constructor(private prisma: PrismaService) {}
+  
   async create(cuotaId: number, createLineaCuotaDto: CreateLineaCuotaDto) {
-    const cuota = await this.prisma.cuota.findUnique({where: {id: cuotaId}})
-    if (!cuota) {
+    const cuota = await this.prisma.cuota.findUnique({
+      where: {id: cuotaId}})
+    
+      if (!cuota) {
       throw new NotFoundException('No se encontró la cuota especificada');      
   }
-    const newLinea = await this.prisma.lineaDeCuota.create({
+    const newLineaCuota = await this.prisma.lineaDeCuota.create({
       data:{
-        ...createLineaCuotaDto, idCuota: cuotaId}});  
+        ...createLineaCuotaDto,
+        idCuota: cuotaId
+      }
+    });  
   }
 
   findAll() {
     return this.prisma.lineaDeCuota.findMany();
   }
 
- async findLineaCuotaByCuotaId(cuotaId: number) {
+  findOne(id: number) {
+    return this.prisma.lineaDeCuota.findUnique({ where: { id } });
+  }
+
+  /* async findLineaCuotaByCuotaId(cuotaId: number) {
   const lineaCuota = await this.prisma.lineaDeCuota.findMany({
     where: {
-      idCuota: cuotaId,
+      idCuota: cuotaId
     },
   });
   if (!lineaCuota) {
@@ -31,11 +41,7 @@ export class LineaCuotaService {
   }
   return 
     lineaCuota;
-} 
-
-  findOne(id: number) {
-    return this.prisma.lineaDeCuota.findUnique({ where: { id } });
-  }
+}  */
 
   update(id: number, updateLineaCuotaDto: UpdateLineaCuotaDto) {
     return this.update(id, updateLineaCuotaDto);

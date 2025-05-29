@@ -8,9 +8,11 @@ import { UpdateCuotaDto } from './dto/update-cuota.dto';
 export class CuotaController {
   constructor(private readonly cuotaService: CuotaService) {}
 
-  @Post()
-  create(@Body() createCuotaDto: CreateCuotaDto) {
-    return this.cuotaService.create(createCuotaDto);
+  @Post(':idUsuario')
+  create(
+    @Param('idUsuario') idUsuario:string,
+    @Body() createCuotaDto: CreateCuotaDto) {
+    return this.cuotaService.create(+idUsuario,createCuotaDto);
   }
 
   @Get()

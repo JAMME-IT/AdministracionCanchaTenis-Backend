@@ -7,19 +7,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class ValorCuotaService {
   constructor(private prisma: PrismaService) {}
-async create(cuotaId: number, createValorCuotaDto: CreateValorCuotaDto) {
+
+  async create(idCuota: number, createValorCuotaDto: CreateValorCuotaDto) {
   // Primero verifico que exista la cuota con el id dado
   const cuota = await this.prisma.cuota.findUnique({
-    where: { id: cuotaId },
+    where: { id: idCuota },
   });
 
   if (!cuota) {
     throw new NotFoundException('No se encontró la cuota especificada');
   }
-  const newLinea = await this.prisma.valorCuota.create({
+  const newValorCuota = await this.prisma.valorCuota.create({
     data: {
       ...createValorCuotaDto,
-      idCuota: cuotaId, 
+      idCuota: idCuota, 
     },
   });
 }

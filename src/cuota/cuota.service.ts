@@ -5,12 +5,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CuotaService {
-   constructor(private prisma: PrismaService) {}
- async create(idUsuario: number, createCuotaDto: CreateCuotaDto) {
+constructor(private prisma: PrismaService) {}
+
+async create(idUsuario: number, createCuotaDto: CreateCuotaDto) {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id: idUsuario },
     });
-     if (!usuario) {
+    if (!usuario) {
       throw new NotFoundException(`No se encontró el usuario con ID ${idUsuario} para asociar la cuota.`);
     }
     const newCuota = await this.prisma.cuota.create({

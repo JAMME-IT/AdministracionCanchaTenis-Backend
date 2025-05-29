@@ -7,9 +7,11 @@ import { UpdateValorCuotaDto } from './dto/update-valor-cuota.dto';
 export class ValorCuotaController {
   constructor(private readonly valorCuotaService: ValorCuotaService) {}
 
-  @Post()
-  create(@Body() createValorCuotaDto: CreateValorCuotaDto) {
-    return this.valorCuotaService.create(createValorCuotaDto);
+  @Post(":idCuota")
+  create(
+    @Param('idCuota') idCuota:string,
+    @Body() createValorCuotaDto: CreateValorCuotaDto) {
+    return this.valorCuotaService.create(+idCuota,createValorCuotaDto);
   }
 
   @Get()

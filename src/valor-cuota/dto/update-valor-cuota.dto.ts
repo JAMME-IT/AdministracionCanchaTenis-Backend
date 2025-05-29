@@ -1,7 +1,12 @@
-import { PartialType } from '@nestjs/mapped-types';
+export class UpdateValorCuotaDto {
+  precio: number;
+  fechaCambio: Date
+}
+/* import { PartialType } from '@nestjs/mapped-types';
 import { CreateValorCuotaDto } from './create-valor-cuota.dto';
 
 export class UpdateValorCuotaDto extends PartialType(CreateValorCuotaDto) {
   precio: number;
   fechaCambio: Date
 }
+ */

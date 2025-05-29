@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { GetUsuarioDto } from './dto/get-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -10,14 +9,12 @@ export class UsuarioService {
 
   // Crear usuario
   async create(createUsuarioDto: CreateUsuarioDto) {
-    return this.prisma.usuario.create({ data: createUsuarioDto });
+    return this.prisma.usuario.create({data:createUsuarioDto});
   }
 
 // Encontrar todos los usuarios
-  async findAll(getUsuarioDto: GetUsuarioDto) {
-    // return this.prisma.usuario.findMany()
-    const usuarios = await this.prisma.usuario.findMany()
-    return usuarios
+  async findAll() {
+    return this.prisma.usuario.findMany()
   }
 
 // Encontrar 1 usuario por ID
@@ -30,7 +27,7 @@ export class UsuarioService {
 
 // Encontrar todos los usuarios por nombre (muestra una lista de nombres que coinciden)
 
-async findAllByNombre(nombre: string) {
+/* async findAllByNombre(nombre: string) {
   const usuarios = await this.prisma.usuario.findMany({
     where: {
       nombre: {
@@ -42,34 +39,21 @@ async findAllByNombre(nombre: string) {
     throw new NotFoundException('No se encontraron usuarios con ese nombre');
   }
   return usuarios;
-}
+} */
 
 
-// actualizar usuario por ID
+//Actualizar cosas de user
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    try {
       return await this.prisma.usuario.update({
         where: { id },
         data: updateUsuarioDto,
       });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-      throw error;
-    }
   }
 
-  // eliminar usuario 
-  async remove(id: number) {
-    try {
-      return await this.prisma.usuario.delete({ where: { id } });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-      throw error;
-    }
+ //Eliminar user
+  async remove(id: number) {   
+    return await this.prisma.usuario.delete({ where: { id } });
+
   }
 }
 

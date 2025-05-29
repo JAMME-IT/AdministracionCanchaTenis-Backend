@@ -9,26 +9,42 @@ import { GetUsuarioDto } from './dto/get-usuario.dto';
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
+//Alta user
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
   }
 
+//Buscar todos los user
   @Get()
-  findAll(GetUsuarioDto: GetUsuarioDto) {
-    return this.usuarioService.findAll(GetUsuarioDto);
+  findAll(): Promise<GetUsuarioDto[]> {
+    return this.usuarioService.findAll();
   }
+/* el por defecto  
+  @Get()
+  findAll() {
+    return this.usuarioService.findAll();
+  } */
 
+//Buscar un user (devolver un user)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) : Promise<GetUsuarioDto>{
     return this.usuarioService.findOne(+id);
   }
 
+/* el por defecto 
+@Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usuarioService.findOne(+id);
+  } */
+
+//Actualizar cosas de user
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuarioService.update(+id, updateUsuarioDto);
   }
 
+//Eliminar user
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usuarioService.remove(+id);
