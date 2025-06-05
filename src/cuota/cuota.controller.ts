@@ -8,18 +8,16 @@ import { UpdateCuotaDto } from './dto/update-cuota.dto';
 export class CuotaController {
   constructor(private readonly cuotaService: CuotaService) {}
 
-  @Post(':idUsuario')
+  @Post() //crear cuotas para todos los usuarios
   create(
-    @Param('idUsuario') idUsuario:string,
     @Body() createCuotaDto: CreateCuotaDto) {
-    return this.cuotaService.create(+idUsuario,createCuotaDto);
+    return this.cuotaService.createForAllActiveUsers(createCuotaDto);
   }
 
   @Get()
   findAll() {
     return this.cuotaService.findAll();
   }
-
 
   @Get(':id')
   findOne(@Param('id') id: string) {

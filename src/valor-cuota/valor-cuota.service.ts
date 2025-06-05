@@ -8,21 +8,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ValorCuotaService {
   constructor(private prisma: PrismaService) {}
 
-  async create(idCuota: number, createValorCuotaDto: CreateValorCuotaDto) {
-  // Primero verifico que exista la cuota con el id dado
-  const cuota = await this.prisma.cuota.findUnique({
-    where: { id: idCuota },
-  });
-
-  if (!cuota) {
-    throw new NotFoundException('No se encontró la cuota especificada');
-  }
-  const newValorCuota = await this.prisma.valorCuota.create({
-    data: {
-      ...createValorCuotaDto,
-      idCuota: idCuota, 
-    },
-  });
+  async create(createValorCuotaDto: CreateValorCuotaDto) {
+    return this.prisma.valorCuota.create({data:createValorCuotaDto});
 }
 
   findAll() {

@@ -3,11 +3,11 @@ import { LineaCuotaService } from './linea-cuota.service';
 import { CreateLineaCuotaDto } from './dto/create-linea-cuota.dto';
 import { UpdateLineaCuotaDto } from './dto/update-linea-cuota.dto';
 
-@Controller('linea-cuota')
+@Controller('linea-cuota')   
 export class LineaCuotaController {
 constructor(private readonly lineaCuotaService: LineaCuotaService) {}
 
-  @Post(":cuotaId")
+  @Post(":cuotaId") // http://localhost:3000/linea-cuota/1
   create(
     @Param('cuotaId') cuotaId:string,
     @Body() createLineaCuotaDto: CreateLineaCuotaDto) {

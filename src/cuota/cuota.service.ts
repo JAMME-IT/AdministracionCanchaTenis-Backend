@@ -2,26 +2,51 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Cuota } from '@prisma/client';
 
 @Injectable()
 export class CuotaService {
 constructor(private prisma: PrismaService) {}
 
-async create(idUsuario: number, createCuotaDto: CreateCuotaDto) {
-    const usuario = await this.prisma.usuario.findUnique({
-      where: { id: idUsuario },
-    });
-    if (!usuario) {
-      throw new NotFoundException(`No se encontró el usuario con ID ${idUsuario} para asociar la cuota.`);
-    }
-    const newCuota = await this.prisma.cuota.create({
-      data: {
-        ...createCuotaDto,
-        idUsuario: idUsuario,
-      }
-    }) 
+async createForAllActiveUsers(createCuotaDto: CreateCuotaDto) {
+  // 1. Obtener todos los usuarios
+  const usuarios = await this.prisma.usuario.findMany();
+
+  if (usuarios.length === 0) {
+    throw new NotFoundException('No hay usuarios registrados.');
   }
 
+  //2.Busco el ultimo ValorCuota
+  const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
+  orderBy: {
+    fechaCambio: 'desc'
+  },
+  }); 
+
+  if (ultimoValorCuota) {
+
+    // 3. Iterar sobre cada usuario y crearle una cuota
+    const cuotasCreadas: Cuota[] = []; 
+
+    for (const usuario of usuarios) {
+      const newCuota = await this.prisma.cuota.create({
+        data: {
+          ...createCuotaDto,
+          //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
+          idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
+          idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
+        },
+      });
+      cuotasCreadas.push(newCuota);
+    }
+
+  }
+
+
+}
+
+
+///
   findAll() {
     return this.prisma.cuota.findMany();
   } 
