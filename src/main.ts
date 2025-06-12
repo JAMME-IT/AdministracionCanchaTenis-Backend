@@ -2,7 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+const app = await NestFactory.create(AppModule);
+
+// Habilitar CORS para permitir solicitudes desde el frontend
+app.enableCors({
+origin: 'http://localhost:5173', // puerto por defecto de Vite
+credentials: true,
+});
+
+await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
