@@ -43,7 +43,7 @@ model Cuota{
   id Int @id @default(autoincrement())
   fechaInicio DateTime  // mal usar @unique ak xq fechaInicio se repite en cada user,sino hacer (unique@(idUser,idCuota))
   fechaVencimiento DateTime
-  montoTotal Decimal @db.Decimal(10,2)
+  montoTotal Decimal @db.Decimal(10,2) @default(0)
   idUsuario Int
   idValorCuota Int
   usuario     Usuario    @relation(fields: [idUsuario], references: [id])

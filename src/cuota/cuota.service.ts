@@ -24,7 +24,8 @@ async createForAllActiveUsers(createCuotaDto: CreateCuotaDto) {
   }); 
 
   if (ultimoValorCuota) {
-
+    
+    console.log("El precio de la cuota es: ",ultimoValorCuota.precio);
     // 3. Iterar sobre cada usuario y crearle una cuota
     const cuotasCreadas: Cuota[] = []; 
 
