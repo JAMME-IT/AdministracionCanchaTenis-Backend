@@ -6,53 +6,62 @@ import { Cuota } from '@prisma/client';
 
 @Injectable()
 export class CuotaService {
-constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-async createForAllActiveUsers(createCuotaDto: CreateCuotaDto) {
-  // 1. Obtener todos los usuarios
-  const usuarios = await this.prisma.usuario.findMany();
+  async createForAllActiveUsers(createCuotaDto: CreateCuotaDto) {
+    // 1. Obtener todos los usuarios
+    const usuarios = await this.prisma.usuario.findMany();
 
-  if (usuarios.length === 0) {
-    throw new NotFoundException('No hay usuarios registrados.');
-  }
-
-  //2.Busco el ultimo ValorCuota
-  const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
-  orderBy: {
-    fechaCambio: 'desc'
-  },
-  }); 
-
-  if (ultimoValorCuota) {
-    
-    console.log("El precio de la cuota es: ",ultimoValorCuota.precio);
-    // 3. Iterar sobre cada usuario y crearle una cuota
-    const cuotasCreadas: Cuota[] = []; 
-
-    for (const usuario of usuarios) {
-      const newCuota = await this.prisma.cuota.create({
-        data: {
-          ...createCuotaDto,
-          //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
-          idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
-          idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
-        },
-      });
-      cuotasCreadas.push(newCuota);
+    if (usuarios.length === 0) {
+      throw new NotFoundException('No hay usuarios registrados.');
     }
 
+    //2.Busco el ultimo ValorCuota
+    const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
+      orderBy: {
+        fechaCambio: 'desc'
+      },
+    });
+
+    if (ultimoValorCuota) {
+
+      console.log("El precio de la cuota es: ", ultimoValorCuota.precio);
+      // 3. Iterar sobre cada usuario y crearle una cuota
+      const cuotasCreadas: Cuota[] = [];
+
+      for (const usuario of usuarios) {
+        const newCuota = await this.prisma.cuota.create({
+          data: {
+            ...createCuotaDto,
+            //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
+            idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
+            idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
+          },
+        });
+        cuotasCreadas.push(newCuota);
+      }
+
+    }
+
+
   }
 
 
-}
+  ///
+  async findAllWithUsers() {
+    return this.prisma.cuota.findMany({
+      include: {
+        usuario: {
+          select: {
+            nombre: true,
+            apellido: true
+          }
+        }
+      }
+    });
+  }
 
-
-///
-  findAll() {
-    return this.prisma.cuota.findMany();
-  } 
-
-async findCuotaByPersona(nameUser: string) {    
+  async findCuotaByPersona(nameUser: string) {
     const usuario = await this.prisma.usuario.findUnique({
       where: { nombreUsuario: nameUser },
     });
@@ -62,19 +71,35 @@ async findCuotaByPersona(nameUser: string) {
     }
 
     const cuotas = await this.prisma.cuota.findMany({
-      where: { idUsuario: usuario.id},
+      where: { idUsuario: usuario.id },
       orderBy: { id: 'asc' },
     });
 
-    return {  
+    return {
       nameUser: usuario.nombreUsuario,
       cuotas,
     };
-}
+  }
 
+  //traer una cuota
   findOne(id: number) {
     return this.prisma.cuota.findUnique({ where: { id } });
   }
+
+//traer una cuota con valorCuota
+findOneWithValor(id: number) {
+    return this.prisma.cuota.findUnique({
+      where: { id },
+      include: {
+        valorCuota: {
+          select: {
+            precio: true
+          }
+        }
+      }
+    });
+  }
+
 
   update(id: number, updateCuotaDto: UpdateCuotaDto) {
     return this.prisma.cuota.update({ where: { id }, data: updateCuotaDto });

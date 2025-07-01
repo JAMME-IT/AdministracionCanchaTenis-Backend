@@ -16,6 +16,7 @@ datasource db {
 /* Definicion de tablas mediante JS*/
 model Usuario {
   id Int     @id @default(autoincrement())
+  fechaCreacion DateTime @default(now())
   nombreUsuario    String  @db.VarChar(100) @unique
   password  String  @db.VarChar(100)
   email     String  @db.VarChar(100)
@@ -33,7 +34,7 @@ enum EstadoValorUser{
 }
 model EstadoUsuario{
   idEstado Int @id @default(autoincrement())
-  fechaHora  DateTime
+  fechaCambio DateTime @default(now()) 
   valor      EstadoValorUser
   idUsuario Int
   usuario      Usuario    @relation(fields: [idUsuario], references: [id])
@@ -43,6 +44,7 @@ model Cuota{
   id Int @id @default(autoincrement())
   fechaInicio DateTime  // mal usar @unique ak xq fechaInicio se repite en cada user,sino hacer (unique@(idUser,idCuota))
   fechaVencimiento DateTime
+  fechaCreacion DateTime @default(now())
   montoTotal Decimal @db.Decimal(10,2) @default(0)
   idUsuario Int
   idValorCuota Int
@@ -54,14 +56,15 @@ model Cuota{
 model LineaDeCuota{
   id Int @id @default(autoincrement())
   idCuota Int
-  fechaPago DateTime @unique
-  monto     Decimal @db.Decimal(10,2)
+  fechaPago DateTime 
+  fechaCreacion DateTime @default(now())
+  monto     Decimal @db.Decimal(10,2) 
   cuota     Cuota    @relation(fields: [idCuota], references: [id])
 }
 
 model ValorCuota{
   id Int @id @default(autoincrement())
   precio Decimal @db.Decimal(10,2)
-  fechaCambio DateTime @unique  //@default(now())
+  fechaCambio DateTime @unique @default(now())
   cuotas       Cuota[] 
 }

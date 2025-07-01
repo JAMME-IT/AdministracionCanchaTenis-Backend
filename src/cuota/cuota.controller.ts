@@ -13,16 +13,24 @@ export class CuotaController {
     @Body() createCuotaDto: CreateCuotaDto) {
     return this.cuotaService.createForAllActiveUsers(createCuotaDto);
   }
-
+  
+  //traer cuotas con usuarios
   @Get()
-  findAll() {
-    return this.cuotaService.findAll();
+  findAllWithUsers() {
+    return this.cuotaService.findAllWithUsers();
   }
-
+  //traer una cuota
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.cuotaService.findOne(+id);
   }
+
+  //traer unaCuota con valorCuota
+    @Get(':id/valorCuota')
+  findOneWithValor(@Param('id') id: number) {
+    return this.cuotaService.findOneWithValor(+id);
+    }
+  
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCuotaDto: UpdateCuotaDto) {
