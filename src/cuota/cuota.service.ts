@@ -82,6 +82,11 @@ export class CuotaService {
             nombre: true,
             apellido: true
           }
+        },
+        estadoCuota: {
+          select: {
+            valor: true
+          }
         }
       }
     });
