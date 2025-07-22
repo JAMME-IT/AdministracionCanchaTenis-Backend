@@ -2,48 +2,74 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Cuota } from '@prisma/client';
+import { Cuota, EstadoValorCuota, EstadoCuota } from '@prisma/client';
 
 @Injectable()
 export class CuotaService {
   constructor(private prisma: PrismaService) { }
 
-  async createForAllActiveUsers(createCuotaDto: CreateCuotaDto) {
-    // 1. Obtener todos los usuarios
-    const usuarios = await this.prisma.usuario.findMany();
+  async createForAllSocioUsers(createCuotaDto: CreateCuotaDto) {
 
-    if (usuarios.length === 0) {
-      throw new NotFoundException('No hay usuarios registrados.');
-    }
-
-    //2.Busco el ultimo ValorCuota
-    const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
-      orderBy: {
-        fechaCambio: 'desc'
+    //0. Verifico si ya existe una cuota con la fecha de inicio
+    const existeCuota = await this.prisma.cuota.findFirst({
+      where: {
+        fechaInicio: createCuotaDto.fechaInicio
       },
     });
 
-    if (ultimoValorCuota) {
+    if (existeCuota) {
+      throw new NotFoundException('Ya existe una cuota con la fecha de inicio ingresada.');
+    } else {
 
-      console.log("El precio de la cuota es: ", ultimoValorCuota.precio);
-      // 3. Iterar sobre cada usuario y crearle una cuota
-      const cuotasCreadas: Cuota[] = [];
+      // 1. Obtener todos los usuarios
+      const usuarios = await this.prisma.usuario.findMany();
 
-      for (const usuario of usuarios) {
-        const newCuota = await this.prisma.cuota.create({
-          data: {
-            ...createCuotaDto,
-            //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
-            idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
-            idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
-          },
-        });
-        cuotasCreadas.push(newCuota);
+      if (usuarios.length === 0) {
+        throw new NotFoundException('No hay usuarios registrados.');
       }
 
+      //2.Busco el ultimo ValorCuota
+      const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
+        orderBy: {
+          fechaCambio: 'desc'
+        },
+      });
+
+      if (ultimoValorCuota) {
+
+        console.log("El precio de la cuota es: ", ultimoValorCuota.precio);
+        // 3. Iterar sobre cada usuario y crearle una cuota
+        const cuotasCreadas: Cuota[] = [];
+
+        for (const usuario of usuarios) {
+          const newCuota = await this.prisma.cuota.create({
+            data: {
+              ...createCuotaDto,
+              //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
+              idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
+              idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
+            },
+          });
+          cuotasCreadas.push(newCuota);
+        }
+
+        const EstadosCuotas: EstadoCuota[] = [];
+        for (const cuotaCreada of cuotasCreadas) {
+          const newEstadoCuota = await this.prisma.estadoCuota.create({
+            data: {
+              valor: EstadoValorCuota.Pendiente,
+              idCuota: cuotaCreada.id, //relaciono cuota con estadocuota (1-*)
+            },
+          });
+          EstadosCuotas.push(newEstadoCuota);
+        }
+        return {
+          cuotas: cuotasCreadas,
+          estados: EstadosCuotas,
+        };
+        /* return EstadosCuotas; */
+      }
     }
-
-
   }
 
 
@@ -86,8 +112,8 @@ export class CuotaService {
     return this.prisma.cuota.findUnique({ where: { id } });
   }
 
-//traer una cuota con valorCuota
-findOneWithValor(id: number) {
+  //traer una cuota con valorCuota
+  findOneWithValor(id: number) {
     return this.prisma.cuota.findUnique({
       where: { id },
       include: {

@@ -28,9 +28,11 @@ model Usuario {
 }
 
 enum EstadoValorUser{
+  Pendiente         /*cuando se registre y aun no haya hecho la verificacion con mail */
   Activo
   Deudor
-  De_Baja
+  Suspendido
+  Inactivo
 }
 model EstadoUsuario{
   idEstado Int @id @default(autoincrement())
@@ -51,6 +53,23 @@ model Cuota{
   usuario     Usuario    @relation(fields: [idUsuario], references: [id])
   valorCuota      ValorCuota     @relation(fields: [idValorCuota], references: [id])
   lineaDeCuota LineaDeCuota[]
+  estadoCuota EstadoCuota[]
+}
+
+enum EstadoValorCuota{
+  Pendiente
+  Pagada
+  Pagada_Parcial
+  Adeudada
+  Cancelada
+}
+
+model EstadoCuota{
+  idEstado Int @id @default(autoincrement())
+  fechaCambio DateTime @default(now()) 
+  valor      EstadoValorCuota
+  idCuota Int
+  cuota      Cuota    @relation(fields: [idCuota], references: [id])
 }
 
 model LineaDeCuota{
@@ -58,7 +77,8 @@ model LineaDeCuota{
   idCuota Int
   fechaPago DateTime 
   fechaCreacion DateTime @default(now())
-  monto     Decimal @db.Decimal(10,2) 
+  monto     Decimal @db.Decimal(10,2)
+  metodoPago  String @db.VarChar(30)
   cuota     Cuota    @relation(fields: [idCuota], references: [id])
 }
 

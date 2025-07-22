@@ -4,10 +4,11 @@ import { LineaCuotaModule } from './linea-cuota/linea-cuota.module';
 import { ValorCuotaModule } from './valor-cuota/valor-cuota.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { EstadoCuotaModule } from './estado-cuota/estado-cuota.module';
 
 
 @Module({
-  imports: [CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule],
+  imports: [CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule],
   controllers: [],
   providers: [],
 })

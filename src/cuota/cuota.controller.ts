@@ -11,7 +11,7 @@ export class CuotaController {
   @Post() //crear cuotas para todos los usuarios
   create(
     @Body() createCuotaDto: CreateCuotaDto) {
-    return this.cuotaService.createForAllActiveUsers(createCuotaDto);
+    return this.cuotaService.createForAllSocioUsers(createCuotaDto);
   }
   
   //traer cuotas con usuarios
@@ -25,7 +25,7 @@ export class CuotaController {
     return this.cuotaService.findOne(+id);
   }
 
-  //traer unaCuota con valorCuota
+//traer unaCuota con valorCuota
     @Get(':id/valorCuota')
   findOneWithValor(@Param('id') id: number) {
     return this.cuotaService.findOneWithValor(+id);

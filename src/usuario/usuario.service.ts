@@ -9,7 +9,18 @@ export class UsuarioService {
 
   // Crear usuario
   async create(createUsuarioDto: CreateUsuarioDto) {
-    return this.prisma.usuario.create({data:createUsuarioDto});
+  
+    const existeUsuario = await this.prisma.usuario.findFirst({
+      where: {
+        nombreUsuario: createUsuarioDto.nombreUsuario
+      },
+    });
+
+    if (existeUsuario) {
+      throw new NotFoundException('El nombre de usuario ya existe');
+    }else {
+      return this.prisma.usuario.create({data:createUsuarioDto});
+    }
   }
 
 // Encontrar todos los usuarios
