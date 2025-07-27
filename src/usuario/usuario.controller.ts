@@ -3,6 +3,7 @@ import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { GetUsuarioDto } from './dto/get-usuario.dto';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 
 
 @Controller('usuario')
@@ -28,6 +29,7 @@ export class UsuarioController {
 
 //Buscar un user (devolver un user)
   @Get(':id')
+  @ApiCreatedResponse({ type: GetUsuarioDto })
   findOne(@Param('id') id: string) : Promise<GetUsuarioDto>{
     return this.usuarioService.findOne(+id);
   }

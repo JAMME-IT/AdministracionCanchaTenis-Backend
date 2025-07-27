@@ -6,7 +6,8 @@ import { Cuota, EstadoValorCuota, EstadoCuota } from '@prisma/client';
 
 @Injectable()
 export class CuotaService {
-  constructor(private prisma: PrismaService) { }
+  
+  constructor(private prisma: PrismaService) { } /* Constructor de la clase CuotaService que inyecta el servicio PrismaService para interactuar con la base de datos mediante CRUDs */
 
   async createForAllSocioUsers(createCuotaDto: CreateCuotaDto) {
 
@@ -117,14 +118,26 @@ export class CuotaService {
     return this.prisma.cuota.findUnique({ where: { id } });
   }
 
-  //traer una cuota con valorCuota
-  findOneWithValor(id: number) {
+  //traer una cuota con valorCuota y estadoCuota
+  findOneWithValorYEstado(id: number) {
     return this.prisma.cuota.findUnique({
       where: { id },
       include: {
         valorCuota: {
           select: {
             precio: true
+          }
+        },
+        estadoCuota: {
+          select: {
+            valor: true
+          }
+        },
+        lineaDeCuota: {
+          select: {
+            monto: true,
+            fechaPago: true,
+            metodoPago: true
           }
         }
       }

@@ -14,7 +14,7 @@ export class CuotaController {
     return this.cuotaService.createForAllSocioUsers(createCuotaDto);
   }
   
-  //traer cuotas con usuarios
+  //traer cuotas con usuarios y estadocuota
   @Get()
   findAllWithUsers() {
     return this.cuotaService.findAllWithUsers();
@@ -25,10 +25,10 @@ export class CuotaController {
     return this.cuotaService.findOne(+id);
   }
 
-//traer unaCuota con valorCuota
-    @Get(':id/valorCuota')
-  findOneWithValor(@Param('id') id: number) {
-    return this.cuotaService.findOneWithValor(+id);
+//traer unaCuota con su valorCuota y estadoCuota y lineaDeCuota
+    @Get(':id/valorCuota/estadoCuota/lineaDeCuota')
+  findOneWithValorYEstado(@Param('id') id: number) {
+    return this.cuotaService.findOneWithValorYEstado(+id);
     }
   
 

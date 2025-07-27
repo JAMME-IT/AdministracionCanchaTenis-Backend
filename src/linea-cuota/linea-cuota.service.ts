@@ -7,19 +7,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class LineaCuotaService {
   constructor(private prisma: PrismaService) {}
   
-  async create(cuotaId: number, createLineaCuotaDto: CreateLineaCuotaDto) {
+  async create(createLineaCuotaDto: CreateLineaCuotaDto) {
     const cuota = await this.prisma.cuota.findUnique({
-      where: {id: cuotaId}})
+      where: {id: createLineaCuotaDto.idCuota}})
     
       if (!cuota) {
       throw new NotFoundException('No se encontró la cuota especificada');      
   }
-    const newLineaCuota = await this.prisma.lineaDeCuota.create({
-      data:{
-        ...createLineaCuotaDto,
-        idCuota: cuotaId
-      }
-    });  
+    const newLineaCuota = await this.prisma.lineaDeCuota.create({data:{...createLineaCuotaDto}});  
   }
 
   findAll() {

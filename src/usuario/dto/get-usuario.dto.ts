@@ -1,7 +1,30 @@
+import { ApiProperty } from '@nestjs/swagger';   
+
 export class GetUsuarioDto {
-nombreUsuario: string;
-email:  string; 
-nombre: string;  
-apellido: string;
-telefono: string; 
+
+    @ApiProperty({ required: true })
+    nombreUsuario: string;
+
+    @ApiProperty({ required: true })
+    email: string;
+
+    @ApiProperty({ required: true })
+    nombre: string;
+
+    @ApiProperty({ required: true })
+    apellido: string;
+
+    @ApiProperty({ required: true })
+    telefono: string;
+
+    /* 
+    @ApiProperty({required:true})
+    dni:string;
+    
+    @ApiProperty({required:true})
+    telefono:string;
+    fechaCreacion: DateTime @default(now())
+    fechaActualizacion: DateTime?
+    fechaEliminacion: DateTime?
+     */
 }
