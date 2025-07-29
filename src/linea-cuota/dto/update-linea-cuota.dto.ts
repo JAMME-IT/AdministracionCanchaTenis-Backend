@@ -1,7 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 export class UpdateLineaCuotaDto {
-fechaPago: Date;
-monto: number
-metodoPago: string;
+
+  @ApiProperty({ required: true })
+  monto: number;
+
+  @ApiProperty({ required: true })
+  metodoPago: string;
+
+  @ApiProperty({ required: true })
+  idCuota: number;
 }
 /* import { PartialType } from '@nestjs/mapped-types';
 import { CreateLineaCuotaDto } from './create-linea-cuota.dto';
