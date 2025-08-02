@@ -17,20 +17,17 @@ export class CreateUsuarioDto {
     @ApiProperty({ required: true })
     apellido: string;
 
-    @ApiProperty({ required: true })
-    telefono: string;
-
-    /* 
+    
     @ApiProperty({required:true})
-    dni:string;
+    dni:number;
     
     @ApiProperty({required:true})
     telefono:string;
     
-    fechaCreacion: DateTime @default(now())
+/*  fechaCreacion: DateTime @default(now())
     fechaActualizacion: DateTime?
-    fechaEliminacion: DateTime?
-     */
+    fechaEliminacion: DateTime? */
+
 }
 
 /* model Usuario {

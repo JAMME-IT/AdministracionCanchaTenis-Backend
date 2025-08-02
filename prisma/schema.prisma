@@ -18,18 +18,18 @@ model Usuario {
   id Int     @id @default(autoincrement())
   nombreUsuario    String  @db.VarChar(100) @unique
   password  String  @db.VarChar(100)
-  email     String  @db.VarChar(100)
+  email     String  @db.VarChar(100) 
   nombre String  @db.VarChar(100) 
   apellido String  @db.VarChar(100) 
-  dni Int 
+  dni Int @default(41472891) 
   telefono  String  @db.VarChar(50)
   fechaCreacion DateTime @default(now())
-  fechaActualizacion DateTime?
+  fechaActualizacion DateTime @updatedAt 
   fechaEliminacion DateTime?
   cuota Cuota[]
   estadoUsuario EstadoUsuario[]
   UsuarioRol UsuarioRol[]
-  Socio Socio[]
+  Socio Socio?
 }
 
 enum EstadoValorUser{
@@ -44,12 +44,12 @@ model EstadoUsuario{
   valor      EstadoValorUser
   idUsuario Int
   fechaCambio DateTime @default(now())  /* es la fechaCambio-fechaCre de estado */
-  /* fechaActualizacion DateTime? */
+  fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?
   usuario      Usuario    @relation(fields: [idUsuario], references: [id])
 }
 
-/* ~~~~~~~ ROLES: sirven ~~~~~~~*/
+/* ~~~~~~~ ROLES:control de roles ~~~~~~~*/
 enum NombreRol{
   Admin
   Socio
@@ -59,33 +59,33 @@ model Rol {
   id Int @id @default(autoincrement())
   nombre NombreRol
   fechaCreacion DateTime @default(now()) 
-  /* fechaActualizacion DateTime? */
+  fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?
   UsuarioRol UsuarioRol[]
 }
 
 model UsuarioRol {            /* No solo refleja la relacion User*---*Rol sino q tambien es un historial de estados de Rol   */
-  idUsuario Int               
-  idRol     Int
+  idUsuario Int     
+  idRol     Int          
   fechaInicio DateTime @default(now()) 
   fechaFin DateTime?
   fechaCreacion DateTime @default(now()) 
-  fechaActualizacion DateTime?
+  fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?
   usuario   Usuario @relation(fields: [idUsuario], references: [id])
   rol       Rol     @relation(fields: [idRol], references: [id])
   @@id([idUsuario, idRol]) // Clave primaria compuesta
 }
 
-/* ~~~~~~ENTIDAD SOCIO: sirve para traer su Numero/Legajo identificatorio ~~~~~~~~*/
+/* ~~~~~~ENTIDAD SOCIO: el socio como tal tiene su Numero/Legajo identificatorio y demas info ~~~~~~~~*/
 model Socio {                                      
   numero Int @id @default(autoincrement())
-  idUsuario Int @unique
   fechaAlta DateTime @default(now())   /* su historial estando de os */
   fechaBaja DateTime? 
   fechaCreacion DateTime @default(now()) 
-  fechaActualizacion DateTime?
+  fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?
+  idUsuario Int @unique   /* Relacion Socio 0..1 ---- 1 Usuario */
   usuario Usuario @relation(fields: [idUsuario], references: [id])
 }
 /*~~~~~~~~~~~~~~*/
@@ -93,8 +93,10 @@ model Cuota{
   id Int @id @default(autoincrement())
   fechaInicio DateTime  // mal usar @unique ak xq fechaInicio se repite en cada user,sino hacer (unique@(idUser,idCuota))
   fechaVencimiento DateTime
-  fechaCreacion DateTime @default(now())
   montoTotal Decimal @db.Decimal(10,2) @default(0)
+  fechaCreacion DateTime @default(now())  
+  fechaActualizacion DateTime @updatedAt
+  fechaEliminacion DateTime?
   idUsuario Int
   idValorCuota Int
   usuario     Usuario    @relation(fields: [idUsuario], references: [id])
@@ -113,27 +115,33 @@ enum EstadoValorCuota{
 
 model EstadoCuota{
   idEstado Int @id @default(autoincrement())
-  fechaCambio DateTime @default(now()) 
   valor      EstadoValorCuota
+  fechaCreacion DateTime @default(now())  /* fechaCambio */
+  fechaActualizacion DateTime @updatedAt
+  fechaEliminacion DateTime?
   idCuota Int
   cuota      Cuota    @relation(fields: [idCuota], references: [id])
 }
 
 model LineaDeCuota{
   id Int @id @default(autoincrement())
-  idCuota Int
   fechaPago DateTime 
-  fechaCreacion DateTime @default(now())
   monto     Decimal @db.Decimal(10,2)
   metodoPago  String @db.VarChar(30)
+  fechaCreacion DateTime @default(now())
+  fechaActualizacion DateTime @updatedAt
+  fechaEliminacion DateTime?
+  idCuota Int
   cuota     Cuota    @relation(fields: [idCuota], references: [id])
 }
 
 model ValorCuota{
   id Int @id @default(autoincrement())
   precio Decimal @db.Decimal(10,2)
-  fechaCreacion DateTime @unique @default(now())   /* fechaCambio */
-  fechaActualizacion DateTime?
+  fechaCambio DateTime @unique @default(now()) 
+
+  fechaCreacion DateTime @default(now())   
+  fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?
   cuotas       Cuota[] 
 }
