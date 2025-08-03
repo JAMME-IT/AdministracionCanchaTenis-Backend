@@ -1,11 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { CreateUsuarioDto } from './create-usuario.dto';
 
 export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {
-    nombreUsuario: string;
-    password:  string;
-    email:  string; 
-    nombre: string;  
-    apellido: string;
-    telefono: string; 
 }
+ /* indica que todos los campos son opcionales, cuyos campos se heredan de CreateUsuarioDto (solo en swagguer) */

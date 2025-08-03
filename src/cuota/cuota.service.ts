@@ -29,7 +29,7 @@ export class CuotaService {
         throw new NotFoundException('No hay usuarios registrados.');
       }
 
-      //2.Busco el ultimo ValorCuota
+      //2.Busco el ultimo ValorCuota (este fue o no actualizado antes de crearCuota al hacer peticion en el front a crear Valor)
       const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
         orderBy: {
           fechaCambio: 'desc'

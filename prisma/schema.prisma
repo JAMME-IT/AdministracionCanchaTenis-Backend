@@ -138,8 +138,6 @@ model LineaDeCuota{
 model ValorCuota{
   id Int @id @default(autoincrement())
   precio Decimal @db.Decimal(10,2)
-  fechaCambio DateTime @unique @default(now()) 
-
   fechaCreacion DateTime @default(now())   
   fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?

@@ -1,25 +1,34 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule,DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule);
 
-//Aqui se Habilita CORS para permitir solicitudes-HTTP desde el frontend del cliente(Vite)
-app.enableCors({
-origin: 'http://localhost:5173', // puerto por defecto de Vite
-credentials: true,
-});
+    app.useGlobalPipes(new ValidationPipe({ /* config de validacion de datos */
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    }));
 
-const config = new DocumentBuilder()  /* config de swagguer */
-    .setTitle('API')
-    .setDescription('API description')
-    .setVersion('1.0')
-    .build();
-const document = SwaggerModule.createDocument(app,config);
-SwaggerModule.setup('api', app, document);
+    app.setGlobalPrefix('api/v1') /*prefijo global para que todas las rutas de la API empiecen con ese prefijo */
+
+    app.enableCors({    /* Aqui se Habilita CORS para permitir solicitudes-HTTP desde el frontend del cliente(Vite) */
+        origin: 'http://localhost:5173', // puerto por defecto de Vite
+        credentials: true,
+    });
 
 
-await app.listen(3000); /* process.env.PORT ?? 3000 */
+    const config = new DocumentBuilder()  /* config de swagguer */
+        .setTitle('Gestión de Club API')
+        .setDescription('Esta API permite gestionar socios, cuotas, turnos, usuarios y otros recursos de un club de manera eficiente y estructurada.')
+        .setVersion('1.0')
+        .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+
+
+    await app.listen(3000); /* process.env.PORT ?? 3000 */
 }
 bootstrap();
