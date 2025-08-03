@@ -1,14 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';   /* importamos ApiProperty de swagger */
-import { IsEmail, IsInt, IsNotEmpty, IsPositive, IsString, MinLength} from 'class-validator'; 
+import { IsEmail, IsInt, IsNotEmpty, IsPositive, IsString, Max, MaxLength, Min, MinLength} from 'class-validator'; 
+import { Type } from 'class-transformer';
 
 export class CreateUsuarioDto {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
+    @MaxLength(30)
     nombreUsuario: string;
 
     @ApiProperty({ required: true })
-    @MinLength(6)
+    @MaxLength(20)
     password: string;
 
     @ApiProperty({ required: true })
@@ -18,18 +20,22 @@ export class CreateUsuarioDto {
     @ApiProperty({ required: true })
     @IsNotEmpty()
     @IsString()
+    @MaxLength(30)
     nombre: string;
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
     @IsString()
+    @MaxLength(30)
     apellido: string;
 
-    
     @ApiProperty({required:true})
-    @IsInt()
+    @Type(() => Number)           /* convertimos a number */
+    
+    @IsInt()                      /* validaciones*/
     @IsPositive()
-    @MinLength(8)
+    @Min(20000000)
+    @Max(90000000)               /* se debe respetar ese rango de valores numericos(de 8 caracteres para el DNI) */
     dni:number;
     
     @ApiProperty({required:true})
