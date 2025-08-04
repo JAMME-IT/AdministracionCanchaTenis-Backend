@@ -18,17 +18,17 @@ export class EstadoCuotaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.estadoCuotaService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.estadoCuotaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEstadoCuotaDto: UpdateEstadoCuotaDto) {
-    return this.estadoCuotaService.update(+id, updateEstadoCuotaDto);
+  update(@Param('id') id: number, @Body() updateEstadoCuotaDto: UpdateEstadoCuotaDto) {
+    return this.estadoCuotaService.update(id, updateEstadoCuotaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.estadoCuotaService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.estadoCuotaService.remove(id);
   }
 }

@@ -27,17 +27,17 @@ export class CuotaController {
 //traer unaCuota con su valorCuota y estadoCuota y lineaDeCuota
     @Get(':id/valorCuota/estadoCuota/lineaDeCuota')
   findOneWithValorYEstado(@Param('id') id: number) {
-    return this.cuotaService.findOneWithValorYEstado(+id);
+    return this.cuotaService.findOneWithValorYEstado(id);
     }
   
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCuotaDto: UpdateCuotaDto) {
-    return this.cuotaService.update(+id, updateCuotaDto);
+  update(@Param('id') id: number, @Body() updateCuotaDto: UpdateCuotaDto) {
+    return this.cuotaService.update(id, updateCuotaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cuotaService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.cuotaService.remove(id);
   }
 }

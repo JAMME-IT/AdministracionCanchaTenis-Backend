@@ -30,8 +30,8 @@ export class UsuarioController {
 //Buscar un user (devolver un user)
   @Get(':id')
   @ApiCreatedResponse({ type: GetUsuarioDto })
-  findOne(@Param('id') id: string) : Promise<GetUsuarioDto>{
-    return this.usuarioService.findOne(+id);
+  findOne(@Param('id') id: number) : Promise<GetUsuarioDto>{
+    return this.usuarioService.findOne(id);
   }
 
 /* el por defecto 
@@ -42,13 +42,13 @@ export class UsuarioController {
 
 //Actualizar cosas de user
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  update(@Param('id') id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    return this.usuarioService.update(id, updateUsuarioDto);
   }
 
 //Eliminar user
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.usuarioService.remove(id);
   }
 }

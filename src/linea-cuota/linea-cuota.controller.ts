@@ -20,17 +20,17 @@ constructor(private readonly lineaCuotaService: LineaCuotaService) {}
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lineaCuotaService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.lineaCuotaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLineaCuotaDto: UpdateLineaCuotaDto) {
-    return this.lineaCuotaService.update(+id, updateLineaCuotaDto);
+  update(@Param('id') id: number, @Body() updateLineaCuotaDto: UpdateLineaCuotaDto) {
+    return this.lineaCuotaService.update(id, updateLineaCuotaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lineaCuotaService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.lineaCuotaService.remove(id);
   }
 }

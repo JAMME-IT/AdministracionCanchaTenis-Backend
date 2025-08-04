@@ -19,17 +19,17 @@ export class ValorCuotaController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.valorCuotaService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.valorCuotaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateValorCuotaDto: UpdateValorCuotaDto) {
-    return this.valorCuotaService.update(+id, updateValorCuotaDto);
+  update(@Param('id') id: number, @Body() updateValorCuotaDto: UpdateValorCuotaDto) {
+    return this.valorCuotaService.update(id, updateValorCuotaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.valorCuotaService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.valorCuotaService.remove(id);
   }
 }
