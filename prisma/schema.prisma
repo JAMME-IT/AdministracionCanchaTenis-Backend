@@ -16,11 +16,11 @@ datasource db {
 /* Definicion de tablas mediante JS*/
 model Usuario {
   id Int     @id @default(autoincrement())
-  nombreUsuario    String  @db.VarChar(100) @unique
-  password  String  @db.VarChar(100)
-  email     String  @db.VarChar(100) 
-  nombre String  @db.VarChar(100) 
-  apellido String  @db.VarChar(100) 
+  nombreUsuario    String  @db.VarChar(30) @unique
+  password  String  @db.VarChar(30)
+  email     String  @db.VarChar(30) 
+  nombre String  @db.VarChar(30) 
+  apellido String  @db.VarChar(30) 
   dni Int @default(41472891) 
   telefono  String  @db.VarChar(50)
   fechaCreacion DateTime @default(now())

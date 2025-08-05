@@ -9,6 +9,7 @@ import { EstadoCuotaModule } from './estado-cuota/estado-cuota.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -16,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule],
+    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

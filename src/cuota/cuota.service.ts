@@ -32,7 +32,7 @@ export class CuotaService {
       //2.Busco el ultimo ValorCuota (este fue o no actualizado antes de crearCuota al hacer peticion en el front a crear Valor)
       const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
         orderBy: {
-          fechaCambio: 'desc'
+          fechaCreacion: 'desc'
         },
       });
 

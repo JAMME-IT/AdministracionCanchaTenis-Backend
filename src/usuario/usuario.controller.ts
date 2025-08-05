@@ -4,7 +4,8 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { GetUsuarioDto } from './dto/get-usuario.dto';
 import { ApiCreatedResponse } from '@nestjs/swagger';
-
+/* En el video no usa controller de usuario ya que para ello utiliza el controller
+del auth para autenticar el usuario, si usa el servicio de usuario */
 
 @Controller('usuario')
 export class UsuarioController {
@@ -15,6 +16,7 @@ export class UsuarioController {
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
   }
+
 
 //Buscar todos los user
   @Get()
