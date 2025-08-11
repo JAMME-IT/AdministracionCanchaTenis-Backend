@@ -3,14 +3,12 @@ import { LineaCuotaService } from './linea-cuota.service';
 import { CreateLineaCuotaDto } from './dto/create-linea-cuota.dto';
 import { UpdateLineaCuotaDto } from './dto/update-linea-cuota.dto';
 
-@Controller('linea-cuota')   
+@Controller('linea-cuota')  // todo en minúsculas
 export class LineaCuotaController {
-constructor(private readonly lineaCuotaService: LineaCuotaService) {}
+  constructor(private readonly lineaCuotaService: LineaCuotaService) {}
 
-  @Post() // http://localhost:3000/linea-cuota
-  create(
-    @Body() createLineaCuotaDto: CreateLineaCuotaDto) {
-    
+  @Post()
+  create(@Body() createLineaCuotaDto: CreateLineaCuotaDto) {
     return this.lineaCuotaService.create(createLineaCuotaDto);
   }
 
