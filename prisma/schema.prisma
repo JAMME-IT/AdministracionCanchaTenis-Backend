@@ -32,11 +32,8 @@ model Usuario {
   Socio Socio?
 }
 
-enum EstadoValorUser{
-  Pendiente         /*cuando se registre y aun no haya hecho la verificacion con mail */
+enum EstadoValorUser{ 
   Activo
-  Deudor
-  Suspendido
   Inactivo
 }
 model EstadoUsuario{
@@ -82,6 +79,8 @@ model Socio {
   numero Int @id @default(autoincrement())
   fechaAlta DateTime @default(now())   /* su historial estando de os */
   fechaBaja DateTime? 
+  estado String @db.VarChar(20) 
+
   fechaCreacion DateTime @default(now()) 
   fechaActualizacion DateTime @updatedAt
   fechaEliminacion DateTime?

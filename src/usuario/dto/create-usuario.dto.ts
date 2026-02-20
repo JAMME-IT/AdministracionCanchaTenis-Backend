@@ -34,8 +34,8 @@ export class CreateUsuarioDto {
     
     @IsInt()                      /* validaciones*/
     @IsPositive()
-    @Min(20000000)
-    @Max(90000000)               /* se debe respetar ese rango de valores numericos(de 8 caracteres para el DNI) */
+    @Min(10000000)
+    @Max(99999999)               /* se debe respetar ese rango de valores numericos(de 8 caracteres para el DNI) */
     dni:number;
     
     @ApiProperty({required:true})

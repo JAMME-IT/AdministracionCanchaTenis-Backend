@@ -10,6 +10,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { SocioModule } from './socio/socio.module';
+import { EstadoUsuarioModule } from './estado-usuario/estado-usuario.module';
 
 
 @Module({
@@ -17,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule, AuthModule],
+    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule, AuthModule, SocioModule, EstadoUsuarioModule],
   controllers: [AppController],
   providers: [AppService],
 })
