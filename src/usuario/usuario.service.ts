@@ -5,7 +5,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsuarioService {               
-  constructor(private prisma: PrismaService) {} /* 0. en el servicio UsuarioService se inyecta el servicio PrismaService para interactuar con la base de datos */
+  constructor(
+    private prisma: PrismaService,
+  ) {} /* 0. en el servicio UsuarioService se inyecta el servicio PrismaService para interactuar con la base de datos */
 
   // Crear usuario
   async create(createUsuarioDto: CreateUsuarioDto) {
@@ -13,10 +15,10 @@ export class UsuarioService {
     
   }
 
-  findOneByNameUser(nombreUsuario: string) { /* Encontrar 1 usuario por nombre */
+  findOneByEmail(email: string) { /* Encontrar 1 usuario por nombre */
     return this.prisma.usuario.findUnique({
       where: {
-            nombreUsuario: nombreUsuario
+            email: email
     }
   });
 }

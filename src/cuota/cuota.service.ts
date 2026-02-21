@@ -93,13 +93,13 @@ export class CuotaService {
     });
   }
 
-  async findCuotaByPersona(nameUser: string) {
+  async findCuotaByPersona(email: string) {
     const usuario = await this.prisma.usuario.findUnique({
-      where: { nombreUsuario: nameUser },
+      where: { email: email },
     });
 
     if (!usuario) {
-      throw new NotFoundException(`Usuario con nombre "${nameUser}" no encontrado`);
+      throw new NotFoundException(`Usuario no encontrado`);
     }
 
     const cuotas = await this.prisma.cuota.findMany({
@@ -108,7 +108,7 @@ export class CuotaService {
     });
 
     return {
-      nameUser: usuario.nombreUsuario,
+      email: usuario.email,
       cuotas,
     };
   }

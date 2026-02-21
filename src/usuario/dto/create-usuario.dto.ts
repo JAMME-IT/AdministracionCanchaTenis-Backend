@@ -4,18 +4,15 @@ import { Type } from 'class-transformer';
 
 export class CreateUsuarioDto {
 
+    
     @ApiProperty({ required: true })
-    @IsNotEmpty()
-    @MaxLength(30)
-    nombreUsuario: string;
+    @IsEmail()
+    email: string;
 
     @ApiProperty({ required: true })
     @MaxLength(20)
     password: string;
 
-    @ApiProperty({ required: true })
-    @IsEmail()
-    email: string;
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
