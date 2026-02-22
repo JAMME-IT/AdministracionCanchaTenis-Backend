@@ -39,8 +39,10 @@ if (rolExistente) {
   }
 
   //3.Buscar un rol por ID de Usuario (ya que usuarioRol tiene el idUsuario, podemos buscar los roles asignados a ese usuario)
-  async obtenerRolesDeUsuario(idUsuario: number): Promise<string[]> { //
-    const relaciones = await this.prisma.usuarioRol.findMany({
+  async obtenerRolesDeUsuario(idUsuario: number): Promise<string[]> { 
+
+    
+    const relaciones = await this.prisma.usuarioRol.findMany({ //aca buscamos en la tabla intermedia usuarioRol todas las relaciones que tengan el idUsuario que nos pasan por parámetro para extraer los roles asignados a ese usuario
       where: {
         idUsuario: idUsuario
       },

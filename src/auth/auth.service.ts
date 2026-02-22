@@ -41,7 +41,7 @@ export class AuthService {
             idRol: 3 }); // Asigna el rol de "Invitado" al usuario recién creado   // rolInvitado.id 
         
         //retorno usuario con rol
-        return {
+        return {                   /* esto mas adelante lo deberia comentar porque no es necesario retornar */
             nuevoUsuario,
             rolAsignado
         }
@@ -60,18 +60,16 @@ export class AuthService {
             throw new UnauthorizedException('La contraseña es incorrecta')
         } 
         
-        const rolesDelUsuario = await this.rolService.obtenerRolesDeUsuario(existeUsuario.id); // Obtiene los roles asignados al usuario 
+        const rolesDelUsuario = await this.rolService.obtenerRolesDeUsuario(existeUsuario.id); // Obtiene los roles(array) asignados al usuario 
 
-
-
-        const payload = {            /// payload es la información que se va a guardar en el token, en este caso el email del usuario y los roles del usuario, para poder acceder a esa información en las rutas protegidas por el guard de autenticación.
+        const payload = {            /// payload es la información que guardara el token (mail y los roles del usuario), para poder acceder a esa información en las rutas protegidas por el guard de autenticación.
             email: existeUsuario.email,
-            roles: rolesDelUsuario // Incluye los roles del usuario en el payload del token
+            roles: rolesDelUsuario 
         }
 
         const token = this.jwtService.sign(payload) // genero el token con el payload
 
-        return {
+        return {         /* esto mas adelante lo deberia comentar porque no es necesario retornar */
             token,
             email
         }

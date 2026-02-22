@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
           secret: jwtConstants.secret,
         }
       );
-      request.user = payload; //El request tendra una propiedad nueva llamada user que contendrá el payload del token, que es la información del usuario autenticado. Esto nos permitirá acceder a esa información en los controladores y servicios que estén protegidos por este guard.
+      request.user = payload; //El request tendra una propiedad nueva llamada user que contendrá el payload del token, que es la información del usuario autenticado(mail /roles). Esto nos permitirá acceder a esa información en los controladores y servicios que estén protegidos por este guard.
     } catch (error) {
       throw new UnauthorizedException();
     }
@@ -35,6 +35,7 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
+  
   private extractTokenFromHeader(request: Request) {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
