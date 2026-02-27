@@ -1,5 +1,5 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { Rol } from '../enums/rol.enum';
+import { Rol } from '../../common/enums/rol.enum';
 import { AuthGuard } from '../guard/auth.guard';
 import { RolesGuard } from '../guard/roles.guard';
 import { Roles } from './roles.decorator';
@@ -9,8 +9,8 @@ import { Roles } from './roles.decorator';
 //ademas tambien permite componer el decorador de @Roles('Admin', 'Socio' , 'Invitado')
 //tomando de entrada el valor del rol.
 
-export function Auth(rol: Rol) {
-  return applyDecorators(Roles(rol), UseGuards(AuthGuard, RolesGuard)); 
+export function Auth(...roles: Rol[]) {
+  return applyDecorators(Roles(...roles), UseGuards(AuthGuard, RolesGuard)); 
 }
 
 

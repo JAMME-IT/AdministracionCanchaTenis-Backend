@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
     //console.log(token);
 
     if (!token) {                          //verifica si existe token
-      throw new UnauthorizedException('');
+      throw new UnauthorizedException('El token de autenticación no fue proporcionado');
     }
 
     try {
@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
       );
       request.user = payload; //El request tendra una propiedad nueva llamada user que contendrá el payload del token, que es la información del usuario autenticado(mail /roles). Esto nos permitirá acceder a esa información en los controladores y servicios que estén protegidos por este guard.
     } catch (error) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('El token de autenticación no es válido o ha expirado');
     }
 
     return true;

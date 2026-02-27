@@ -7,11 +7,12 @@ import { UpdateCuotaDto } from './dto/update-cuota.dto';
 export class CuotaController {
   constructor(private readonly cuotaService: CuotaService) {}
 
-  @Post() //crear cuotas para todos los usuarios
-  create(
-    @Body() createCuotaDto: CreateCuotaDto) {
-    return this.cuotaService.createForAllSocioUsers(createCuotaDto);
-  }
+  // ojo lo comente hay que arreglarlo!!!
+  // @Post() //crear cuotas para todos los usuarios               ojo lo comente hay que arreglarlo!!!
+  // create(
+  //   @Body() createCuotaDto: CreateCuotaDto) {
+  //   return this.cuotaService.createForAllSocioUsers(createCuotaDto);
+  // }
   
   //traer cuotas con usuarios y estadocuota
   @Get()

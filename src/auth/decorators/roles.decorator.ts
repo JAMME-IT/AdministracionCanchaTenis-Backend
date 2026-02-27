@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { Rol } from '../../auth/enums/rol.enum'; // Importamos el enum de roles para usarlo en el decorador
+import { Rol } from '../../common/enums/rol.enum'; // Importamos el enum de roles para usarlo en el decorador
 
 // Esta es la llave secreta que usaremos para guardar los roles en la "memoria" de NestJS
 export const ROLES_KEY = 'roles';

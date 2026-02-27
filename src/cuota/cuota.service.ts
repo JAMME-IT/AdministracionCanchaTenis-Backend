@@ -9,79 +9,85 @@ export class CuotaService {
   
   constructor(private prisma: PrismaService) { } /* Constructor de la clase CuotaService que inyecta el servicio PrismaService para interactuar con la base de datos mediante CRUDs */
 
-  async createForAllSocioUsers(createCuotaDto: CreateCuotaDto) {
+  // ojo lo comente hay que arreglarlo!!!
+  //Incio de comentario
+  // async createForAllSocioUsers(createCuotaDto: CreateCuotaDto) {
 
-    //0. Verifico si ya existe una cuota con la fecha de inicio
-    const existeCuota = await this.prisma.cuota.findFirst({
-      where: {
-        fechaInicio: createCuotaDto.fechaInicio
-      },
-    });
+  //   //0. Verifico si ya existe una cuota con la fecha de inicio
+  //   const existeCuota = await this.prisma.cuota.findFirst({
+  //     where: {
+  //       fechaInicio: createCuotaDto.fechaInicio
+  //     },
+  //   });
 
-    if (existeCuota) {
-      throw new NotFoundException('Ya existe una cuota con la fecha de inicio ingresada.');
-    } else {
+  //   if (existeCuota) {
+  //     throw new NotFoundException('Ya existe una cuota con la fecha de inicio ingresada.');
+  //   } else {
 
-      // 1. Obtener todos los usuarios
-      const usuarios = await this.prisma.usuario.findMany();
+  //     // 1. Obtener todos los usuarios
+  //     const usuarios = await this.prisma.usuario.findMany();
 
-      if (usuarios.length === 0) {
-        throw new NotFoundException('No hay usuarios registrados.');
-      }
+  //     if (usuarios.length === 0) {
+  //       throw new NotFoundException('No hay usuarios registrados.');
+  //     }
 
-      //2.Busco el ultimo ValorCuota (este fue o no actualizado antes de crearCuota al hacer peticion en el front a crear Valor)
-      const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
-        orderBy: {
-          fechaCreacion: 'desc'
-        },
-      });
+  //     //2.Busco el ultimo ValorCuota (este fue o no actualizado antes de crearCuota al hacer peticion en el front a crear Valor)
+  //     const ultimoValorCuota = await this.prisma.valorCuota.findFirst({
+  //       orderBy: {
+  //         fechaCreacion: 'desc'
+  //       },
+  //     });
 
-      if (ultimoValorCuota) {
+  //     if (ultimoValorCuota) {
 
-        console.log("El precio de la cuota es: ", ultimoValorCuota.precio);
-        // 3. Iterar sobre cada usuario y crearle una cuota
-        const cuotasCreadas: Cuota[] = [];
+  //       console.log("El precio de la cuota es: ", ultimoValorCuota.precio);
+  //       // 3. Iterar sobre cada usuario y crearle una cuota
+  //       const cuotasCreadas: Cuota[] = [];
 
-        for (const usuario of usuarios) {
-          const newCuota = await this.prisma.cuota.create({
-            data: {
-              ...createCuotaDto,
-              //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
-              idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
-              idUsuario: usuario.id,           //relaciono usuario con cuota (1-*)
-            },
-          });
-          cuotasCreadas.push(newCuota);
-        }
+  //       for (const usuario of usuarios) {
+          
+  //         const socio = await this.prisma.socio.findUnique({
+  //           where: { idUsuario: usuario.id },
+  //         });
+          
+  //         const newCuota = await this.prisma.cuota.create({
+  //           data: {
+  //             ...createCuotaDto,
+  //             //montoTotal:ultimoValorCuota.precio, esto no se asigna xq el valor cambia en fcion a los pagos de socio
+  //             idValorCuota: ultimoValorCuota.id, //relaciono la tabla valorCuota con cuota (1-*)
+  //             numeroSocio: socio.numeroSocio,          //relaciono usuario con cuota (1-*)
+  //           },
+  //         });
+  //         cuotasCreadas.push(newCuota);
+  //       }
 
-        const EstadosCuotas: EstadoCuota[] = [];
-        for (const cuotaCreada of cuotasCreadas) {
-          const newEstadoCuota = await this.prisma.estadoCuota.create({
-            data: {
-              valor: EstadoValorCuota.Pendiente,
-              idCuota: cuotaCreada.id, //relaciono cuota con estadocuota (1-*)
-            },
-          });
-          EstadosCuotas.push(newEstadoCuota);
-        }
-        return {
-          cuotas: cuotasCreadas,
-          estados: EstadosCuotas,
-        };
-        /* return EstadosCuotas; */
-      }
-    }
-  }
+  //       const EstadosCuotas: EstadoCuota[] = [];
+  //       for (const cuotaCreada of cuotasCreadas) {
+  //         const newEstadoCuota = await this.prisma.estadoCuota.create({
+  //           data: {
+  //             valor: EstadoValorCuota.Pendiente,
+  //             idCuota: cuotaCreada.id, //relaciono cuota con estadocuota (1-*)
+  //           },
+  //         });
+  //         EstadosCuotas.push(newEstadoCuota);
+  //       }
+  //       return {
+  //         cuotas: cuotasCreadas,
+  //         estados: EstadosCuotas,
+  //       };
+  //       /* return EstadosCuotas; */
+  //     }
+  //   }
+  // }
+  //fin de comentario
 
 
-  ///
   async findAllWithUsers() {
     return this.prisma.cuota.findMany({
       include: {
-        usuario: {
+        socio: {
           select: {
-            nombre: true,
-            apellido: true
+            numeroSocio: true,
           }
         },
         estadoCuota: {

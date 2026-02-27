@@ -24,6 +24,7 @@ async function bootstrap() {
         .setTitle('Gestión de Club API')
         .setDescription('Esta API permite gestionar socios, cuotas, turnos, usuarios y otros recursos de un club de manera eficiente y estructurada.')
         .setVersion('1.0')
+        .addBearerAuth()       // Agrega auth Bearer (JWT) en Swagger (candadito para proteger las rutas que requieren auth)
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);

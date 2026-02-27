@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { Rol } from 'src/auth/enums/rol.enum';
+import { Rol } from '../../common/enums/rol.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -24,6 +24,12 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest(); //Obtenemos el usuario autenticado del request, que se ha agregado al request por el AuthGuard.
     // Este usuario "user" tiene una propiedad "roles" ( que puede ser "Admin", "Socio", "Invitado").
     
+
+    //si es rol admin entonces tiene acceso a todas las rutas(sin importar sin esta el decorador @Auth(Role.Admin) en ruta)
+    /*  if (user.roles?.includes(Rol.ADMIN)) {
+      return true;
+    } */
+
     // Verificamos si el usuario tiene al menos uno de los roles requeridos para acceder a esta ruta
     const tienePermiso = requiredRoles.some(rol => user.roles?.includes(rol)); //el some permite verificar si al menos uno de los roles requeridos (requiredRoles) está incluido en los roles del usuario autenticado (user.roles). Corta con q coincida uno solo, no es necesario que coincidan todos los roles 
     

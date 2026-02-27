@@ -5,6 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 import {JwtService} from '@nestjs/jwt';
 import { RolService } from 'src/rol/rol.service';
+import { Rol } from 'src/common/enums/rol.enum';
 
 @Injectable()                    
 export class AuthService {
@@ -36,9 +37,7 @@ export class AuthService {
         
         /* 3. Usamos el RolService para asignarle el rol 'Invitado' automáticamente.
            Asumimos que el ID 3 corresponde a 'Invitado' según el orden de tu base de datos */
-        const rolAsignado =  await this.rolService.asignarRolAUsuario({ 
-            idUsuario: nuevoUsuario.id, 
-            idRol: 3 }); // Asigna el rol de "Invitado" al usuario recién creado   // rolInvitado.id 
+        const rolAsignado =  await this.rolService.asignarRolAUsuario({idUsuario: nuevoUsuario.id, nombreRol: Rol.INVITADO}); // Asigna el rol de "Invitado" al usuario recién creado   // rolInvitado.id 
         
         //retorno usuario con rol
         return {                   /* esto mas adelante lo deberia comentar porque no es necesario retornar */
@@ -63,7 +62,7 @@ export class AuthService {
         const rolesDelUsuario = await this.rolService.obtenerRolesDeUsuario(existeUsuario.id); // Obtiene los roles(array) asignados al usuario 
 
         const payload = {            /// payload es la información que guardara el token (mail y los roles del usuario), para poder acceder a esa información en las rutas protegidas por el guard de autenticación.
-            email: existeUsuario.email,
+            idUsuario: existeUsuario.id,
             roles: rolesDelUsuario 
         }
 
@@ -71,10 +70,8 @@ export class AuthService {
 
         return {         /* esto mas adelante lo deberia comentar porque no es necesario retornar */
             token,
-            email
+            idUsuario: existeUsuario.id
         }
     }
-
-    
 
 }

@@ -14,9 +14,11 @@ export class GetUsuarioDto {
     @ApiProperty({ required: true })
     telefono: string;
 
-    /* 
     @ApiProperty({required:true})
-    dni:string;
+    dni:number;
+
+    /* 
+    
     
     @ApiProperty({required:true})
     telefono:string;

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { Rol } from '../../common/enums/rol.enum';
 export class CreateRolDto {
 
     @ApiProperty()
@@ -12,5 +13,5 @@ export class CreateRolDto {
     @IsNotEmpty()
     @IsInt()
     @IsPositive()
-    idRol: number; //id= 1 para Admin, id=2 para Socio, id=3 para Invitado
+    nombreRol:Rol;
 }

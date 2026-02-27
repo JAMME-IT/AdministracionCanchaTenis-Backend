@@ -1,12 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { GetUsuarioDto } from './dto/get-usuario.dto';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
+import { CambiarRolDto } from './dto/cambiar-rol.dto';
+import { Rol } from '../common/enums/rol.enum';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { ActiveUser } from 'src/common/decorators/active-user.decorator';
+import { UserActiveInterface } from 'src/common/interfaces/active-user.interface';
+
 /* En el video no usa controller de usuario ya que para ello utiliza el controller
 del auth para autenticar el usuario, si usa el servicio de usuario */
 
+@ApiBearerAuth() //Indica a swagguer que esta ruta requiere autenticación con Bearer (JWT)
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
@@ -31,20 +38,16 @@ export class UsuarioController {
 
 //Buscar un user (devolver un user)
   @Get(':id')
-  @ApiCreatedResponse({ type: GetUsuarioDto })
+  @ApiCreatedResponse({ type: GetUsuarioDto }) //para que en swagger muestre el dto de getUsuarioDto
   findOne(@Param('id') id: number) : Promise<GetUsuarioDto>{
     return this.usuarioService.findOne(id);
   }
 
-/* el por defecto 
-@Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
-  } */
-
 //Actualizar cosas de user
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+  update(@Param('id') id: number,
+  @Body() updateUsuarioDto: UpdateUsuarioDto) {
+
     return this.usuarioService.update(id, updateUsuarioDto);
   }
 
@@ -53,4 +56,32 @@ export class UsuarioController {
   remove(@Param('id') id: number) {
     return this.usuarioService.remove(id);
   }
+
+
+//Cambiar rol de user
+  @Patch(':id/rol')
+  @Auth(Rol.ADMIN)
+  async cambiarRol(
+    @ActiveUser() user:UserActiveInterface,
+    @Param('id') id: number, 
+    @Body() body: CambiarRolDto
+  ) {
+    
+    const { nuevoRol } = body;
+
+    switch (nuevoRol) {
+      case Rol.SOCIO:
+        return await this.usuarioService.cambiarASocio(id); //No hacpasarle el Rol.Socio xq el metodo ya sabe que rol asignar(Socio obvio)
+        
+      case Rol.INVITADO:
+        return await this.usuarioService.cambiarAInvitado(id);
+        
+      case Rol.ADMIN:
+        return await this.usuarioService.cambiarAAdmin(id);
+        
+        default:
+        throw new BadRequestException('Rol no reconocido');   
+    }
+  }
+
 }
