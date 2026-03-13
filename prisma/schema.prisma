@@ -1,110 +1,24 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"                 // postgres
+  provider = "postgresql" // mysql
   url      = env("DATABASE_URL")
 }
 
-// Definicion de tablas mediante JS
-model Usuario {
-  id Int     @id @default(autoincrement())
-  email     String  @db.VarChar(255) @unique
-  password  String  @db.VarChar(255)
-  nombre String  @db.VarChar(255) 
-  apellido String  @db.VarChar(255) 
-  dni Int @unique
-  telefono  String  @db.VarChar(50)
-  fechaCreacion DateTime @default(now())
-  fechaActualizacion DateTime @updatedAt 
-  fechaEliminacion DateTime?
-  estadoUsuario EstadoUsuario[]
-  UsuarioRol UsuarioRol[]
-  Socio Socio?
-}
-
-enum EstadoValorUser{ 
+enum EstadoValorUser {
   Activo
   Inactivo
 }
-model EstadoUsuario{
-  idEstado Int @id @default(autoincrement())
-  valor      EstadoValorUser
-  idUsuario Int
-  fechaCambio DateTime @default(now())  // es la fechaCambio-fechaCre de estado 
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  usuario      Usuario    @relation(fields: [idUsuario], references: [id])
-}
 
-// ~~~~~~~ ROLES:control de roles ~~~~~~~
-enum NombreRol{
+enum NombreRol {
   Admin
   Socio
-  Invitado    // No socio 
-}
-model Rol {
-  id Int @id @default(autoincrement())
-  nombre NombreRol @unique
-  fechaCreacion DateTime @default(now()) 
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  UsuarioRol UsuarioRol[]
+  Invitado
 }
 
-model UsuarioRol {            // No solo refleja la relacion User*---*Rol sino q tambien es un historial de estados de Rol   
-  idUsuario Int     
-  idRol     Int          
-  fechaInicio DateTime @default(now()) 
-  fechaFin DateTime?
-  fechaCreacion DateTime @default(now()) 
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  usuario   Usuario @relation(fields: [idUsuario], references: [id])
-  rol       Rol     @relation(fields: [idRol], references: [id])
-  @@id([idUsuario, idRol]) // Clave primaria compuesta
-}
-
-// ~~~~~~ENTIDAD SOCIO: el socio como tal tiene su Numero/Legajo identificatorio y demas info ~~~~~~~~
-model Socio {                                      
-  numeroSocio Int @id @default(autoincrement())
-  fechaAlta DateTime @default(now())   // 
-  fechaBaja DateTime? 
-  estado String @db.VarChar(20) 
-
-  fechaCreacion DateTime @default(now()) 
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  idUsuario Int @unique   // Relacion Socio 0..1 ---- 1 Usuario 
-  usuario Usuario @relation(fields: [idUsuario], references: [id])
-  cuota Cuota[]
-}
-// ~~~~~~~~~~~~~~
-model Cuota{
-  id Int @id @default(autoincrement())
-  fechaInicio DateTime  // mal usar @unique ak xq fechaInicio se repite en cada user,sino hacer (unique@(idUser,idCuota))
-  fechaVencimiento DateTime
-  montoTotal Decimal @db.Decimal(10,2) @default(0)
-  fechaCreacion DateTime @default(now())  
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  idUsuario Int
-  idValorCuota Int
-  numeroSocio Int
-  socio            Socio    @relation(fields: [numeroSocio], references: [numeroSocio])
-  valorCuota      ValorCuota     @relation(fields: [idValorCuota], references: [id])
-  lineaDeCuota LineaDeCuota[]
-  estadoCuota EstadoCuota[]
-}
-
-enum EstadoValorCuota{
+enum EstadoValorCuota {
   Pendiente
   Pagada
   Pagada_Parcial
@@ -112,33 +26,274 @@ enum EstadoValorCuota{
   Cancelada
 }
 
-model EstadoCuota{
-  idEstado Int @id @default(autoincrement())
-  valor      EstadoValorCuota
-  fechaCreacion DateTime @default(now())  // fechaCambio 
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  idCuota Int
+enum EstadoTurnoValor {
+  Confirmado
+  Cancelado
+  Iniciado
+  Finalizado
+  No_Asistio
+  Impago
+  Pago
+}
+
+enum EstadoCanchaValor {
+  Disponible
+  En_Mantenimiento
+  Inhabilitada
+}
+
+enum SueloCancha {
+  Dura
+  Polvo_De_Ladrillo
+  Cesped
+}
+
+enum DiaSemana {
+  Lunes
+  Martes
+  Miercoles
+  Jueves
+  Viernes
+  Sabado
+  Domingo
+}
+
+model Usuario {
+  id            Int             @id @default(autoincrement())
+  username      String?         @unique @db.VarChar(100)
+  password      String          @db.VarChar(255)
+  email         String          @unique @db.VarChar(255)
+  nombre        String          @db.VarChar(100)
+  apellido      String          @db.VarChar(100)
+  telefono      String          @db.VarChar(50)
+  dni           Int             @unique
+  fechaCreacion DateTime        @default(now())
+  estadoUsuario EstadoUsuario[]
+  usuarioRol    UsuarioRol[]
+  socio         Socio?
+  cuotas        Cuota[]
+  turnos        Turno[]
+}
+
+model EstadoUsuario {
+  idEstado  Int             @id @default(autoincrement())
+  valor     EstadoValorUser
+  fechaHora DateTime        @default(now())
+  idUsuario Int
+  usuario   Usuario         @relation(fields: [idUsuario], references: [id])
+
+  @@index([idUsuario])
+}
+
+model Rol {
+  id         Int          @id @default(autoincrement())
+  nombre     NombreRol    @unique
+  usuarioRol UsuarioRol[]
+}
+
+model UsuarioRol {
+  idUsuario   Int
+  idRol       Int
+  fechaInicio DateTime  @default(now()) @db.Date
+  fechaFin    DateTime? @db.Date
+  usuario     Usuario   @relation(fields: [idUsuario], references: [id])
+  rol         Rol       @relation(fields: [idRol], references: [id])
+
+  @@id([idUsuario, idRol])
+  @@index([idRol])
+}
+
+model Socio {
+  numeroSocio Int       @id @default(autoincrement())
+  fechaAlta   DateTime  @default(now())
+  fechaBaja   DateTime?
+  estado      String    @db.VarChar(30)
+  idUsuario   Int       @unique
+  usuario     Usuario   @relation(fields: [idUsuario], references: [id])
+  cuota       Cuota[]
+}
+
+model ValorCuota {
+  id          Int      @id @default(autoincrement())
+  precio      Decimal  @db.Decimal(10, 2)
+  fechaCambio DateTime @default(now())
+  cuotas      Cuota[]
+}
+
+model Cuota {
+  id               Int            @id @default(autoincrement())
+  fechaInicio      DateTime       @db.Date
+  fechaVencimiento DateTime       @db.Date
+  montoTotal       Decimal        @default(0) @db.Decimal(10, 2)
+  idUsuario        Int
+  numeroSocio      Int
+  idValorCuota     Int
+  usuario          Usuario        @relation(fields: [idUsuario], references: [id])
+  socio            Socio          @relation(fields: [numeroSocio], references: [numeroSocio])
+  valorCuota       ValorCuota     @relation(fields: [idValorCuota], references: [id])
+  lineaDeCuota     LineaDeCuota[]
+  estadoCuota      EstadoCuota[]
+
+  @@index([idUsuario])
+  @@index([numeroSocio])
+  @@index([idValorCuota])
+}
+
+model EstadoCuota {
+  idEstado  Int              @id @default(autoincrement())
+  valor     EstadoValorCuota
+  fechaHora DateTime         @default(now())
+  idCuota   Int
+  cuota     Cuota            @relation(fields: [idCuota], references: [id])
+
+  @@index([idCuota])
+}
+
+model LineaDeCuota {
+  id         Int      @id @default(autoincrement())
+  fechaPago  DateTime @db.Date
+  monto      Decimal  @db.Decimal(10, 2)
+  estado     Int
+  metodoPago String   @db.VarChar(30)
+  idCuota    Int
   cuota      Cuota    @relation(fields: [idCuota], references: [id])
+
+  @@index([idCuota])
 }
 
-model LineaDeCuota{
-  id Int @id @default(autoincrement())
-  fechaPago DateTime 
-  monto     Decimal @db.Decimal(10,2)
-  metodoPago  String @db.VarChar(30)
-  fechaCreacion DateTime @default(now())
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  idCuota Int
-  cuota     Cuota    @relation(fields: [idCuota], references: [id])
+model Cancha {
+  id           Int            @id @default(autoincrement())
+  nroCancha    Int            @unique
+  turnos       Turno[]
+  estadoCancha EstadoCancha[]
 }
 
-model ValorCuota{
-  id Int @id @default(autoincrement())
-  precio Decimal @db.Decimal(10,2)
-  fechaCreacion DateTime @default(now())   
-  fechaActualizacion DateTime @updatedAt
-  fechaEliminacion DateTime?
-  cuotas       Cuota[] 
+model EstadoCancha {
+  id          Int               @id @default(autoincrement())
+  iluminacion Boolean
+  fechaCambio DateTime          @default(now())
+  descripcion String            @db.VarChar(300)
+  valorState  EstadoCanchaValor
+  suelo       SueloCancha
+  idCancha    Int
+  cancha      Cancha            @relation(fields: [idCancha], references: [id])
+
+  @@index([idCancha])
+}
+
+model Luz {
+  id                  Int         @id @default(autoincrement())
+  costoLuz            Decimal     @db.Decimal(10, 2)
+  franjaHorariaInicio DateTime    @db.Time(0)
+  franjaHorariaFin    DateTime    @db.Time(0)
+  turnos              Turno[]
+  estadoLuz           EstadoLuz[]
+  pagoLuz             PagoLuz?
+}
+
+model EstadoLuz {
+  id         Int      @id @default(autoincrement())
+  costoXHora Decimal  @db.Decimal(10, 2)
+  fecha      DateTime
+  idLuz      Int
+  luz        Luz      @relation(fields: [idLuz], references: [id])
+
+  @@index([idLuz])
+}
+
+model ValorTurno {
+  id          Int      @id @default(autoincrement())
+  costoXHora  Decimal  @db.Decimal(10, 2)
+  fechaCambio DateTime @default(now())
+  turnos      Turno[]
+}
+
+model TipoTurno {
+  id          Int     @id @default(autoincrement())
+  duracionMax Int
+  turnos      Turno[]
+}
+
+model DiaFuncionamientoClub {
+  id           Int            @id @default(autoincrement())
+  diaSemana    DiaSemana
+  habilitado   Boolean
+  turnos       Turno[]
+  rangoHorario RangoHorario[]
+}
+
+model RangoHorario {
+  id                      Int                   @id @default(autoincrement())
+  horaInicio              DateTime              @db.Time(0)
+  horaFin                 DateTime              @db.Time(0)
+  idDiaFuncionamientoClub Int
+  diaFuncionamientoClub   DiaFuncionamientoClub @relation(fields: [idDiaFuncionamientoClub], references: [id])
+
+  @@index([idDiaFuncionamientoClub])
+}
+
+model Turno {
+  id                      Int                   @id @default(autoincrement())
+  fecha                   DateTime              @db.Date
+  horaInicio              DateTime              @db.Time(0)
+  horaFin                 DateTime              @db.Time(0)
+  costoTurnoNS            Decimal               @db.Decimal(10, 2)
+  estadoActual            EstadoTurnoValor
+  idCancha                Int
+  idLuz                   Int?
+  idUsuario               Int
+  idTipoTurno             Int
+  idValorTurno            Int
+  idDiaFuncionamientoClub Int
+  cancha                  Cancha                @relation(fields: [idCancha], references: [id])
+  luz                     Luz?                  @relation(fields: [idLuz], references: [id])
+  usuario                 Usuario               @relation(fields: [idUsuario], references: [id])
+  tipoTurno               TipoTurno             @relation(fields: [idTipoTurno], references: [id])
+  valorTurno              ValorTurno            @relation(fields: [idValorTurno], references: [id])
+  diaFuncionamientoClub   DiaFuncionamientoClub @relation(fields: [idDiaFuncionamientoClub], references: [id])
+  estadoTurno             EstadoTurno[]
+  pagoTurno               PagoTurno?
+
+  @@index([idCancha])
+  @@index([idLuz])
+  @@index([idUsuario])
+  @@index([idTipoTurno])
+  @@index([idValorTurno])
+  @@index([idDiaFuncionamientoClub])
+}
+
+model EstadoTurno {
+  idEstadoTurno Int              @id @default(autoincrement())
+  valorEstado   EstadoTurnoValor
+  fechaYHora    DateTime
+  idTurno       Int
+  turno         Turno            @relation(fields: [idTurno], references: [id])
+
+  @@index([idTurno])
+}
+
+model PagoTurno {
+  id              Int               @id @default(autoincrement())
+  montoTotTurno   Decimal           @db.Decimal(10, 2)
+  fechaPago       DateTime          @db.Date
+  idTurno         Int               @unique
+  turno           Turno             @relation(fields: [idTurno], references: [id])
+  lineasTurnoPago LineasTurnoPago[]
+}
+
+model LineasTurnoPago {
+  id             Int       @id @default(autoincrement())
+  montoTurnoPago Decimal   @db.Decimal(10, 2)
+  idPagoTurno    Int
+  pagoTurno      PagoTurno @relation(fields: [idPagoTurno], references: [id])
+
+  @@index([idPagoTurno])
+}
+
+model PagoLuz {
+  id            Int      @id @default(autoincrement())
+  montoTotalLuz Decimal  @db.Decimal(10, 2)
+  fechaPago     DateTime @db.Date
+  idLuz         Int      @unique
+  luz           Luz      @relation(fields: [idLuz], references: [id])
 }
