@@ -4,6 +4,10 @@
 /build
 /mysql
 
+#credenciales
+.env
+.env.local
+
 # Logs
 logs
 *.log
