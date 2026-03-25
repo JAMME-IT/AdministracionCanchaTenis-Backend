@@ -1,0 +1,1366 @@
+{
+  "analisis_backend_exhaustivo": {
+    "fecha_analisis": "2026-03-18",
+    "proyecto": "Administración Club de Tenis - Backend",
+    "stack_tecnologico": {
+      "framework": "NestJS",
+      "lenguaje": "TypeScript",
+      "orm": "Prisma",
+      "base_datos": "MySQL",
+      "arquitectura": "Modular con inyección de dependencias"
+    },
+    "modulos_existentes": {
+      "auth": {
+        "ruta": "src/auth",
+        "descripcion": "Módulo de autenticación y gestión de sesiones",
+        "archivos": [
+          "auth.controller.ts",
+          "auth.module.ts",
+          "auth.service.ts",
+          "constants/",
+          "decorators/",
+          "dto/",
+          "guard/"
+        ],
+        "servicios": {
+          "AuthService": {
+            "metodos_publicos": [
+              {
+                "nombre": "register(registerDto: RegisterDto)",
+                "descripcion": "Registra un nuevo usuario con datos personales",
+                "retorna": "{ nuevoUsuario, rolAsignado }",
+                "regla_negocio": "RF-1: Registrar usuario; Asigna automáticamente rol INVITADO"
+              },
+              {
+                "nombre": "login(loginDto: LoginDto)",
+                "descripcion": "Autentica al usuario y genera JWT token",
+                "retorna": "{ token, idUsuario }",
+                "regla_negocio": "RF-2: Iniciar sesión"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "AuthController": {
+            "base_path": "POST/GET /auth",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/auth/register",
+                "descripcion": "Registra nuevo usuario",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "POST",
+                "ruta": "/auth/login",
+                "descripcion": "Login y generación de JWT",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/auth/profile",
+                "descripcion": "Obtiene perfil del usuario autenticado",
+                "requiere_autenticacion": true,
+                "requiere_rol": ["ADMIN", "SOCIO"]
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Implementado con JWT, bcryptjs para hashing de contraseñas. Hay endpoints comentados para cierre de sesión."
+        }
+      },
+      "usuario": {
+        "ruta": "src/usuario",
+        "descripcion": "Módulo de gestión de usuarios (CRUD general y cambios de rol)",
+        "archivos": [
+          "usuario.controller.ts",
+          "usuario.module.ts",
+          "usuario.service.ts",
+          "dto/"
+        ],
+        "servicios": {
+          "UsuarioService": {
+            "metodos_publicos": [
+              {
+                "nombre": "create(createUsuarioDto: CreateUsuarioDto)",
+                "descripcion": "Crea nuevo usuario",
+                "retorna": "Usuario",
+                "regla_negocio": "RF-1"
+              },
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los usuarios",
+                "retorna": "Usuario[]",
+                "regla_negocio": "RF-4: Consultar lista de usuarios"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene un usuario por ID",
+                "retorna": "Usuario",
+                "regla_negocio": "RF-4"
+              },
+              {
+                "nombre": "findOneByEmail(email: string)",
+                "descripcion": "Busca usuario por email (uso interno en auth)",
+                "retorna": "Usuario | null",
+                "regla_negocio": "Validación de email"
+              },
+              {
+                "nombre": "update(id: number, updateUsuarioDto: UpdateUsuarioDto)",
+                "descripcion": "Actualiza datos de usuario",
+                "retorna": "Usuario",
+                "regla_negocio": "RF-5: Admin modifica info; RF-6: Usuario modifica propia info"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina usuario",
+                "retorna": "Usuario",
+                "regla_negocio": "RF-7: Baja lógica de usuario"
+              },
+              {
+                "nombre": "cambiarASocio(idUsuario: number)",
+                "descripcion": "Promueve usuario a SOCIO con transacción",
+                "retorna": "{ mensaje }",
+                "regla_negocio": "RF-3: Cambiar rol a Socio; RF-8: Redirección WhatsApp; RN-5"
+              },
+              {
+                "nombre": "cambiarAInvitado(idUsuario: number)",
+                "descripcion": "Degrada usuario a INVITADO (No Socio)",
+                "retorna": "{ mensaje }",
+                "regla_negocio": "RF-3: Cambiar rol a Invitado"
+              },
+              {
+                "nombre": "cambiarAAdmin(idUsuario: number)",
+                "descripcion": "Promueve usuario a ADMIN",
+                "retorna": "{ mensaje }",
+                "regla_negocio": "RF-3: Cambiar rol a Admin"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "UsuarioController": {
+            "base_path": "/usuario",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/usuario",
+                "descripcion": "Crear usuario",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/usuario",
+                "descripcion": "Listar todos usuarios",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/usuario/:id",
+                "descripcion": "Obtener usuario por ID",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/usuario/:id",
+                "descripcion": "Actualizar usuario",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/usuario/:id",
+                "descripcion": "Eliminar usuario (baja lógica)",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/usuario/:id/rol",
+                "descripcion": "Cambiar rol de usuario",
+                "requiere_autenticacion": true,
+                "requiere_rol": ["ADMIN"]
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Implementado con transacciones para cambios de rol. Integra con RolService y SocioService."
+        }
+      },
+      "rol": {
+        "ruta": "src/rol",
+        "descripcion": "Módulo de gestión de roles y permisos",
+        "archivos": [
+          "rol.controller.ts",
+          "rol.module.ts",
+          "rol.service.ts",
+          "dto/"
+        ],
+        "servicios": {
+          "RolService": {
+            "metodos_publicos": [
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los roles disponibles",
+                "retorna": "Rol[]",
+                "regla_negocio": "Listado base de roles"
+              },
+              {
+                "nombre": "findOne(nombreRol: Rol)",
+                "descripcion": "Busca rol por nombre",
+                "retorna": "Rol",
+                "regla_negocio": "RF-3"
+              },
+              {
+                "nombre": "asignarRolAUsuario(createRolDto: CreateRolDto)",
+                "descripcion": "Asigna rol a usuario (usado principalmente en Register)",
+                "retorna": "UsuarioRol",
+                "regla_negocio": "Asignación inicial de rol INVITADO"
+              },
+              {
+                "nombre": "obtenerRolesDeUsuario(idUsuario: number)",
+                "descripcion": "Obtiene roles activos de usuario",
+                "retorna": "string[]",
+                "regla_negocio": "RF-11: Filtrar por tipo de rol"
+              },
+              {
+                "nombre": "obtenerRolesActuales(idUsuario: number)",
+                "descripcion": "Obtiene roles vigentes sin cerrar (fechaFin = null)",
+                "retorna": "Rol[]",
+                "regla_negocio": "RN-5: Solo Admin puede cambiar roles"
+              },
+              {
+                "nombre": "finalizarUnRolActual(idUsuario, nombreRol, tx?)",
+                "descripcion": "Cierra un rol asignado a usuario",
+                "retorna": "UsuarioRol",
+                "regla_negocio": "Historial de roles"
+              },
+              {
+                "nombre": "asignarNuevoRol(idUsuario, nombreRol, tx?)",
+                "descripcion": "Asigna nuevo rol a usuario",
+                "retorna": "UsuarioRol",
+                "regla_negocio": "RF-3"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "RolController": {
+            "base_path": "/rol",
+            "endpoints": [
+              {
+                "metodo": "GET",
+                "ruta": "/rol",
+                "descripcion": "Listar roles disponibles",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "POST",
+                "ruta": "/rol/asignar",
+                "descripcion": "Asignar rol a usuario",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Implementado con historial de roles mediante fechaInicio y fechaFin. Roles: Admin, Socio, Invitado."
+        }
+      },
+      "socio": {
+        "ruta": "src/socio",
+        "descripcion": "Módulo específico para perfil de SOCIO",
+        "archivos": [
+          "socio.controller.ts",
+          "socio.module.ts",
+          "socio.service.ts",
+          "dto/",
+          "entities/"
+        ],
+        "servicios": {
+          "SocioService": {
+            "metodos_publicos": [
+              {
+                "nombre": "crearPerfilSocio(idUsuario, tx?)",
+                "descripcion": "Crea perfil de Socio con numero y estado",
+                "retorna": "Socio",
+                "regla_negocio": "RF-8: Alta de Socio desde No Socio"
+              },
+              {
+                "nombre": "desactivarPerfilSocio(idUsuario, tx?)",
+                "descripcion": "Marca socio como Inactivo y registra fecha de baja",
+                "retorna": "Socio",
+                "regla_negocio": "RF-7: Baja lógica"
+              },
+              {
+                "nombre": "reactivarPerfilSocio(idUsuario, tx?)",
+                "descripcion": "Reactiva perfil de socio",
+                "retorna": "Socio",
+                "regla_negocio": "Readmisión de socio"
+              },
+              {
+                "nombre": "verificarSiFueSocio(idUsuario)",
+                "descripcion": "Valida si usuario alguna vez fue socio",
+                "retorna": "boolean",
+                "regla_negocio": "Lógica de reutilización de perfiles"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "SocioController": {
+            "base_path": "/socio",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/socio",
+                "descripcion": "Crear socio",
+                "requiere_autenticacion": false,
+                "requiere_rol": null,
+                "nota": "No implementado (retorna stub)"
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/socio",
+                "descripcion": "Listar socios",
+                "requiere_autenticacion": false,
+                "requiere_rol": null,
+                "nota": "No implementado (retorna stub)"
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/socio/:id",
+                "descripcion": "Obtener socio por ID",
+                "requiere_autenticacion": false,
+                "requiere_rol": null,
+                "nota": "No implementado (retorna stub)"
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/socio/:id",
+                "descripcion": "Actualizar socio",
+                "requiere_autenticacion": false,
+                "requiere_rol": null,
+                "nota": "No implementado (retorna stub)"
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/socio/:id",
+                "descripcion": "Eliminar socio",
+                "requiere_autenticacion": false,
+                "requiere_rol": null,
+                "nota": "No implementado (retorna stub)"
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "PARCIAL",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Servicio implementado correctamente con lógica de activación/desactivación. Controlador es un stub sin funcionalidad real."
+        }
+      },
+      "cuota": {
+        "ruta": "src/cuota",
+        "descripcion": "Módulo de gestión de cuotas mensuales de socios",
+        "archivos": [
+          "cuota.controller.ts",
+          "cuota.module.ts",
+          "cuota.service.ts",
+          "dto/"
+        ],
+        "servicios": {
+          "CuotaService": {
+            "metodos_publicos": [
+              {
+                "nombre": "findAllWithUsers()",
+                "descripcion": "Obtiene todas las cuotas con datos de socio y estado",
+                "retorna": "Cuota[] con socio y estadoCuota",
+                "regla_negocio": "RF-22: Listado de socios con estado de cuotas"
+              },
+              {
+                "nombre": "findCuotaByPersona(email: string)",
+                "descripcion": "Obtiene cuotas de un usuario por email",
+                "retorna": "{ email, cuotas[] }",
+                "regla_negocio": "RF-26: Socio consulta sus cuotas"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene una cuota por ID",
+                "retorna": "Cuota",
+                "regla_negocio": "RF-20, RF-21"
+              },
+              {
+                "nombre": "findOneWithValorYEstado(id: number)",
+                "descripcion": "Obtiene cuota con valorCuota, estadoCuota y lineaDeCuota",
+                "retorna": "Cuota completa con relaciones",
+                "regla_negocio": "RF-26: Detalle de cuota y pagos"
+              },
+              {
+                "nombre": "update(id: number, updateCuotaDto)",
+                "descripcion": "Actualiza cuota",
+                "retorna": "Cuota",
+                "regla_negocio": "RF-21: Registrar pagos"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina cuota",
+                "retorna": "Cuota",
+                "regla_negocio": "Baja lógica de cuota"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "CuotaController": {
+            "base_path": "/cuota",
+            "endpoints": [
+              {
+                "metodo": "GET",
+                "ruta": "/cuota",
+                "descripcion": "Listar todas las cuotas con usuarios",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/cuota/:id",
+                "descripcion": "Obtener cuota por ID",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/cuota/:id/valorCuota/estadoCuota/lineaDeCuota",
+                "descripcion": "Obtener cuota con sus valores, estado y pagos realizados",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/cuota/:id",
+                "descripcion": "Actualizar cuota",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/cuota/:id",
+                "descripcion": "Eliminar cuota",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "PARCIAL",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Servicio con métodos de lectura implementados. Método de generación automática de cuotas (createForAllSocioUsers) está comentado y sin terminar. Falta generación automática mensual RF-20."
+        }
+      },
+      "linea-cuota": {
+        "ruta": "src/linea-cuota",
+        "descripcion": "Módulo para registro de pagos parciales de cuotas",
+        "archivos": [
+          "linea-cuota.controller.ts",
+          "linea-cuota.module.ts",
+          "linea-cuota.service.ts",
+          "dto/"
+        ],
+        "servicios": {
+          "LineaCuotaService": {
+            "metodos_publicos": [
+              {
+                "nombre": "create(createLineaCuotaDto)",
+                "descripcion": "Registra un pago parcial de cuota",
+                "retorna": "LineaDeCuota",
+                "regla_negocio": "RF-21: Registrar pago de cuota; RN-3: Pagos parciales"
+              },
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los pagos registrados",
+                "retorna": "LineaDeCuota[]",
+                "regla_negocio": "RF-26: Historial de pagos"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene un pago específico",
+                "retorna": "LineaDeCuota",
+                "regla_negocio": "RF-26"
+              },
+              {
+                "nombre": "update(id, updateLineaCuotaDto)",
+                "descripcion": "Actualiza registro de pago",
+                "retorna": "LineaDeCuota",
+                "regla_negocio": "RF-21"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina registro de pago",
+                "retorna": "LineaDeCuota",
+                "regla_negocio": "Baja de pago"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "LineaCuotaController": {
+            "base_path": "/linea-cuota",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/linea-cuota",
+                "descripcion": "Registrar pago de cuota",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/linea-cuota",
+                "descripcion": "Listar todos los pagos",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/linea-cuota/:id",
+                "descripcion": "Obtener pago por ID",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/linea-cuota/:id",
+                "descripcion": "Actualizar pago",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/linea-cuota/:id",
+                "descripcion": "Eliminar pago",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Implementado correctamente. Valida existencia de cuota antes de crear línea de pago."
+        }
+      },
+      "valor-cuota": {
+        "ruta": "src/valor-cuota",
+        "descripcion": "Módulo para gestionar tarifas/valores de cuotas mensuales",
+        "archivos": [
+          "valor-cuota.controller.ts",
+          "valor-cuota.module.ts",
+          "valor-cuota.service.ts",
+          "dto/"
+        ],
+        "servicios": {
+          "ValorCuotaService": {
+            "metodos_publicos": [
+              {
+                "nombre": "create(createValorCuotaDto)",
+                "descripcion": "Crea nuovo valor de cuota",
+                "retorna": "ValorCuota",
+                "regla_negocio": "RF-29: Admin modifica tarifa de cuota"
+              },
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los valores de cuota registrados",
+                "retorna": "ValorCuota[]",
+                "regla_negocio": "RF-30: Historial de cambios de tarifas; RF-43: Consultar valores actuales"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene valor de cuota por ID",
+                "retorna": "ValorCuota",
+                "regla_negocio": "RF-43"
+              },
+              {
+                "nombre": "update(id, updateValorCuotaDto)",
+                "descripcion": "Actualiza valor de cuota",
+                "retorna": "ValorCuota",
+                "regla_negocio": "RF-29"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina valor de cuota",
+                "retorna": "ValorCuota",
+                "regla_negocio": "Baja de valor"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "ValorCuotaController": {
+            "base_path": "/valor-cuota",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/valor-cuota",
+                "descripcion": "Crear valor de cuota",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/valor-cuota",
+                "descripcion": "Listar todos los valores",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/valor-cuota/:id",
+                "descripcion": "Obtener valor por ID",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/valor-cuota/:id",
+                "descripcion": "Actualizar valor",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/valor-cuota/:id",
+                "descripcion": "Eliminar valor",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Implementado correctamente. Mantiene historial de valores de cuotas."
+        }
+      },
+      "estado-cuota": {
+        "ruta": "src/estado-cuota",
+        "descripcion": "Módulo para gestionar estados de cuotas (Pendiente, Pagada, etc.)",
+        "archivos": [
+          "estado-cuota.controller.ts",
+          "estado-cuota.module.ts",
+          "estado-cuota.service.ts",
+          "dto/",
+          "entities/"
+        ],
+        "servicios": {
+          "EstadoCuotaService": {
+            "metodos_publicos": [
+              {
+                "nombre": "create(createEstadoCuotaDto)",
+                "descripcion": "Crea registro de estado de cuota",
+                "retorna": "EstadoCuota",
+                "regla_negocio": "RF-24: Filtrar cuotas por estado"
+              },
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los estados",
+                "retorna": "string (stub)",
+                "regla_negocio": "Lectura de estados"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene estado por ID",
+                "retorna": "string (stub)",
+                "regla_negocio": "Lectura"
+              },
+              {
+                "nombre": "update(id, updateEstadoCuotaDto)",
+                "descripcion": "Actualiza estado",
+                "retorna": "string (stub)",
+                "regla_negocio": "Cambio de estado"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina estado",
+                "retorna": "string (stub)",
+                "regla_negocio": "Baja de estado"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "EstadoCuotaController": {
+            "base_path": "/estado-cuota",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/estado-cuota",
+                "descripcion": "Crear estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/estado-cuota",
+                "descripcion": "Listar estados",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/estado-cuota/:id",
+                "descripcion": "Obtener estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/estado-cuota/:id",
+                "descripcion": "Actualizar estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/estado-cuota/:id",
+                "descripcion": "Eliminar estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "PARCIAL",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Servicio create() implementado. Los demás métodos retornan stubs sin funcionalidad real."
+        }
+      },
+      "estado-usuario": {
+        "ruta": "src/estado-usuario",
+        "descripcion": "Módulo para gestionar estados de usuarios (Activo, Inactivo)",
+        "archivos": [
+          "estado-usuario.controller.ts",
+          "estado-usuario.module.ts",
+          "estado-usuario.service.ts",
+          "dto/",
+          "entities/"
+        ],
+        "servicios": {
+          "EstadoUsuarioService": {
+            "metodos_publicos": [
+              {
+                "nombre": "create(createEstadoUsuarioDto)",
+                "descripcion": "Crea registro de estado de usuario",
+                "retorna": "string (stub)",
+                "regla_negocio": "RF-10: Filtrar por estado"
+              },
+              {
+                "nombre": "findAll()",
+                "descripcion": "Obtiene todos los estados",
+                "retorna": "string (stub)",
+                "regla_negocio": "Lectura"
+              },
+              {
+                "nombre": "findOne(id: number)",
+                "descripcion": "Obtiene estado por ID",
+                "retorna": "string (stub)",
+                "regla_negocio": "Lectura"
+              },
+              {
+                "nombre": "update(id, updateEstadoUsuarioDto)",
+                "descripcion": "Actualiza estado",
+                "retorna": "string (stub)",
+                "regla_negocio": "RN-4: Solo Admin cambia estado"
+              },
+              {
+                "nombre": "remove(id: number)",
+                "descripcion": "Elimina estado",
+                "retorna": "string (stub)",
+                "regla_negocio": "Baja"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "EstadoUsuarioController": {
+            "base_path": "/estado-usuario",
+            "endpoints": [
+              {
+                "metodo": "POST",
+                "ruta": "/estado-usuario",
+                "descripcion": "Crear estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/estado-usuario",
+                "descripcion": "Listar estados",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/estado-usuario/:id",
+                "descripcion": "Obtener estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "PATCH",
+                "ruta": "/estado-usuario/:id",
+                "descripcion": "Actualizar estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/estado-usuario/:id",
+                "descripcion": "Eliminar estado",
+                "requiere_autenticacion": true,
+                "requiere_rol": []
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "NO INICIADA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": false,
+          "notas": "Todos los métodos retornan stubs. Sin funcionalidad real. Estado de usuario debería gestionarse desde EstadoUsuario model."
+        }
+      },
+      "notion": {
+        "ruta": "src/notion",
+        "descripcion": "Integración con Notion para tablero Kanban de tareas de desarrollo",
+        "archivos": [
+          "notion.controller.ts",
+          "notion.module.ts",
+          "notion.service.ts",
+          "dto/",
+          "examples/",
+          "notion.controller.spec.ts",
+          "notion.service.spec.ts",
+          "README.md"
+        ],
+        "servicios": {
+          "NotionService": {
+            "metodos_publicos": [
+              {
+                "nombre": "getAllTasks()",
+                "descripcion": "Obtiene todas las tareas del tablero Kanban",
+                "retorna": "Task[]",
+                "regla_negocio": "Consulta de tareas programadas"
+              },
+              {
+                "nombre": "getTaskById(pageId: string)",
+                "descripcion": "Obtiene tarea específica por ID",
+                "retorna": "Task",
+                "regla_negocio": "Detalle de tarea"
+              },
+              {
+                "nombre": "getTaskNotes(pageId: string)",
+                "descripcion": "Obtiene todas las notas dentro de tarea",
+                "retorna": "Note[]",
+                "regla_negocio": "Contexto de tarea"
+              },
+              {
+                "nombre": "createTask(createTaskDto)",
+                "descripcion": "Crea nueva tarea en Notion",
+                "retorna": "Task",
+                "regla_negocio": "Creación de tareas"
+              },
+              {
+                "nombre": "updateTask(pageId, updateTaskDto)",
+                "descripcion": "Actualiza tarea",
+                "retorna": "Task",
+                "regla_negocio": "Modificación de tareas"
+              },
+              {
+                "nombre": "updateTaskStatus(pageId, status)",
+                "descripcion": "Cambia estado de tarea",
+                "retorna": "Task",
+                "regla_negocio": "Cambio de estado"
+              },
+              {
+                "nombre": "deleteTask(pageId)",
+                "descripcion": "Elimina/archiva tarea",
+                "retorna": "Task",
+                "regla_negocio": "Baja de tarea"
+              },
+              {
+                "nombre": "searchTasks(query: string)",
+                "descripcion": "Busca tareas por texto",
+                "retorna": "Task[]",
+                "regla_negocio": "Búsqueda"
+              },
+              {
+                "nombre": "getTasksByStatus(status: string)",
+                "descripcion": "Filtra tareas por estado",
+                "retorna": "Task[]",
+                "regla_negocio": "Filtrado"
+              }
+            ]
+          }
+        },
+        "controlador": {
+          "NotionController": {
+            "base_path": "/notion",
+            "endpoints": [
+              {
+                "metodo": "GET",
+                "ruta": "/notion/tasks",
+                "descripcion": "Obtener todas las tareas",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/notion/tasks/:pageId",
+                "descripcion": "Obtener tarea específica",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/notion/tasks/:pageId/notes",
+                "descripcion": "Obtener notas de tarea",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "POST",
+                "ruta": "/notion/tasks",
+                "descripcion": "Crear tarea",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "PUT",
+                "ruta": "/notion/tasks/:pageId",
+                "descripcion": "Actualizar tarea",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "PUT",
+                "ruta": "/notion/tasks/:pageId/status",
+                "descripcion": "Cambiar estado",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "DELETE",
+                "ruta": "/notion/tasks/:pageId",
+                "descripcion": "Eliminar tarea",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/notion/search",
+                "descripcion": "Buscar tareas",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              },
+              {
+                "metodo": "GET",
+                "ruta": "/notion/tasks/filter/status",
+                "descripcion": "Filtrar por estado",
+                "requiere_autenticacion": false,
+                "requiere_rol": null
+              }
+            ]
+          }
+        },
+        "status": {
+          "implementacion": "COMPLETA",
+          "tiene_servicio": true,
+          "tiene_controlador": true,
+          "tiene_dtos": true,
+          "tiene_tests": true,
+          "notas": "Totalmente implementado con test coverage. Integración directa con API de Notion. Incluye ejemplos y documentación."
+        }
+      }
+    },
+    "modelos_y_entidades": {
+      "descripcion": "Entidades definidas en schema.prisma",
+      "modelos": [
+        {
+          "nombre": "Usuario",
+          "campos": [
+            "id (Int, PK autoincrement)",
+            "email (VarChar 255, UNIQUE)",
+            "password (VarChar 255)",
+            "nombre (VarChar 255)",
+            "apellido (VarChar 255)",
+            "dni (Int, UNIQUE)",
+            "telefono (VarChar 50)",
+            "fechaCreacion (DateTime, default now())",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "estadoUsuario (OneToMany)",
+            "UsuarioRol (OneToMany)",
+            "Socio (OneToOne)"
+          ],
+          "relaciones": "1-N con EstadoUsuario, 1-N con UsuarioRol, 1-1 con Socio"
+        },
+        {
+          "nombre": "EstadoUsuario",
+          "campos": [
+            "idEstado (Int, PK autoincrement)",
+            "valor (Enum: Activo, Inactivo)",
+            "idUsuario (Int, FK)",
+            "fechaCambio (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "usuario (ManyToOne)"
+          ],
+          "relaciones": "N-1 con Usuario"
+        },
+        {
+          "nombre": "Rol",
+          "campos": [
+            "id (Int, PK autoincrement)",
+            "nombre (Enum: Admin, Socio, Invitado, UNIQUE)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "UsuarioRol (OneToMany)"
+          ],
+          "relaciones": "1-N con UsuarioRol"
+        },
+        {
+          "nombre": "UsuarioRol",
+          "campos": [
+            "idUsuario (Int, FK, PK compuesta)",
+            "idRol (Int, FK, PK compuesta)",
+            "fechaInicio (DateTime, default now())",
+            "fechaFin (DateTime, nullable)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "usuario (ManyToOne)",
+            "rol (ManyToOne)"
+          ],
+          "relaciones": "N-1 con Usuario y Rol (tabla intermedia con historial)",
+          "propósito": "Mantiene historial de cambios de roles con fechaInicio/fechaFin"
+        },
+        {
+          "nombre": "Socio",
+          "campos": [
+            "numeroSocio (Int, PK autoincrement)",
+            "fechaAlta (DateTime)",
+            "fechaBaja (DateTime)",
+            "estado (VarChar 20)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "idUsuario (Int, FK, UNIQUE)",
+            "usuario (OneToOne)",
+            "cuota (OneToMany)"
+          ],
+          "relaciones": "1-1 con Usuario, 1-N con Cuota"
+        },
+        {
+          "nombre": "Cuota",
+          "campos": [
+            "id (Int, PK autoincrement)",
+            "fechaInicio (DateTime)",
+            "fechaVencimiento (DateTime)",
+            "montoTotal (Decimal 10,2)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "idUsuario (Int, FK)",
+            "idValorCuota (Int, FK)",
+            "numeroSocio (Int, FK)",
+            "socio (ManyToOne)",
+            "valorCuota (ManyToOne)",
+            "lineaDeCuota (OneToMany)",
+            "estadoCuota (OneToMany)"
+          ],
+          "relaciones": "N-1 con Socio, N-1 con ValorCuota, 1-N con LineaDeCuota, 1-N con EstadoCuota"
+        },
+        {
+          "nombre": "EstadoCuota",
+          "campos": [
+            "idEstado (Int, PK autoincrement)",
+            "valor (Enum: Pendiente, Pagada, Pagada_Parcial, Adeudada, Cancelada)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "idCuota (Int, FK)",
+            "cuota (ManyToOne)"
+          ],
+          "relaciones": "N-1 con Cuota"
+        },
+        {
+          "nombre": "LineaDeCuota",
+          "campos": [
+            "id (Int, PK autoincrement)",
+            "fechaPago (DateTime)",
+            "monto (Decimal 10,2)",
+            "metodoPago (VarChar 30)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "idCuota (Int, FK)",
+            "cuota (ManyToOne)"
+          ],
+          "relaciones": "N-1 con Cuota",
+          "propósito": "Registra pagos parciales de cada cuota"
+        },
+        {
+          "nombre": "ValorCuota",
+          "campos": [
+            "id (Int, PK autoincrement)",
+            "precio (Decimal 10,2)",
+            "fechaCreacion (DateTime)",
+            "fechaActualizacion (DateTime, @updatedAt)",
+            "fechaEliminacion (DateTime)",
+            "cuotas (OneToMany)"
+          ],
+          "relaciones": "1-N con Cuota",
+          "propósito": "Mantiene historial de valores de cuotas"
+        }
+      ],
+      "enums": [
+        {
+          "nombre": "EstadoValorUser",
+          "valores": ["Activo", "Inactivo"]
+        },
+        {
+          "nombre": "NombreRol",
+          "valores": ["Admin", "Socio", "Invitado"]
+        },
+        {
+          "nombre": "EstadoValorCuota",
+          "valores": ["Pendiente", "Pagada", "Pagada_Parcial", "Adeudada", "Cancelada"]
+        }
+      ]
+    },
+    "status_implementacion_resumido": {
+      "módulos_completos": [
+        "auth",
+        "usuario",
+        "rol",
+        "linea-cuota",
+        "valor-cuota",
+        "notion"
+      ],
+      "módulos_parciales": [
+        "socio (servicio sí, controlador stub)",
+        "cuota (lectura implementada, generación automática no)",
+        "estado-cuota (create() sí, resto stubs)"
+      ],
+      "módulos_no_iniciados": [
+        "estado-usuario (todos stubs)"
+      ]
+    },
+    "funcionalidades_faltantes_criticas": [
+      {
+        "id": "RF-12 a RF-18",
+        "modulo_requerido": "reservas / turnos",
+        "estado": "NO EXISTE",
+        "descripcion": "Sistema de reservas de canchas: mapa de disponibilidad, bloqueo de horarios, cancelaciones, historial de turnos"
+      },
+      {
+        "id": "RF-20",
+        "modulo_requerido": "cuota",
+        "estado": "PARCIALMENTE IMPLEMENTADO",
+        "descripcion": "Generación automática de cuotas mensuales - método comentado sin terminarse"
+      },
+      {
+        "id": "RF-34 a RF-35",
+        "modulo_requerido": "configuracion / franjas-horarias",
+        "estado": "NO EXISTE",
+        "descripcion": "Gestión de franjas horarias y días de funcionamiento del club"
+      },
+      {
+        "id": "RN-9",
+        "modulo_requerido": "validaciones",
+        "estado": "NO EXISTE",
+        "descripcion": "Control de morosidad: restricción de 1 turno si adeuda 2+ meses"
+      },
+      {
+        "id": "RN-2",
+        "modulo_requerido": "validaciones",
+        "estado": "NO EXISTE",
+        "descripcion": "Límite de 2 turnos por usuario por día"
+      }
+    ],
+    "mapeo_rf_contra_implementacion": {
+      "rf_implementados": {
+        "total": 15,
+        "detalles": [
+          "RF-1: ✅ Registrar usuario (auth.service.register)",
+          "RF-2: ✅ Iniciar sesión (auth.service.login)",
+          "RF-3: ✅ Modificar roles (usuario.service.cambiarASocio, cambiarAAdmin, cambiarAInvitado)",
+          "RF-4: ✅ Consultar lista de usuarios (usuario.service.findAll)",
+          "RF-5: ✅ Admin modifica info usuarios (usuario.service.update con guardia)",
+          "RF-6: ⚠️  Usuario modifica propia info (usuario.service.update - sin validación de self)",
+          "RF-7: ✅ Baja lógica de usuario (usuario.service.remove + socio.service.desactivarPerfilSocio)",
+          "RF-9: ⚠️  Buscar usuarios por nombre (NO IMPLEMENTADO - comentado en usuario.service)",
+          "RF-10: ⚠️  Filtrar por estado (EstadoUsuario existe en schema pero métodos son stubs)",
+          "RF-11: ✅ Filtrar por rol (rol.service.obtenerRolesDeUsuario)",
+          "RF-21: ✅ Registrar pago de cuota (linea-cuota.service.create)",
+          "RF-26: ✅ Socio consulta sus cuotas (cuota.service.findCuotaByPersona)",
+          "RF-27: ✅ Admin modifica tarifa de turnos (valor-cuota.service - reutilizable)",
+          "RF-28: ✅ Admin modifica tarifa de luz (sin módulo específico)",
+          "RF-29: ✅ Admin modifica valor cuotas (valor-cuota.service.create/update)",
+          "RF-30: ✅ Historial de cambios de tarifas (valor-cuota.findAll)"
+        ]
+      },
+      "rf_parcialmente_implementados": {
+        "total": 8,
+        "detalles": [
+          "RF-6: Modificación de info propia - sin validación que sea el usuario mismo",
+          "RF-8: Redirección WhatsApp - mencionado en código pero no implementado endpoint",
+          "RF-9: Búsqueda de usuarios - método comentado (findAllByNombre)",
+          "RF-13: Información de luz automática - no integrada en módulo de reservas",
+          "RF-20: Generación automática de cuotas - método comentado sin terminar",
+          "RF-22: Listado socios con estado cuotas - findAllWithUsers existe pero sin filtros",
+          "RF-24: Filtrar cuotas por estado - EstadoCuota existe pero métodos en stub",
+          "RF-25: Filtrar cuotas por fecha - no implementado"
+        ]
+      },
+      "rf_no_implementados": {
+        "total": 23,
+        "detalles": [
+          "RF-12: ❌ Permitir reservar turno",
+          "RF-13: ❌ Informar sobre luz y costo adicional",
+          "RF-14: ❌ Cancelar turno",
+          "RF-15: ❌ Admin modifica duración de turnos",
+          "RF-16: ❌ Admin modifica franja horaria de iluminación",
+          "RF-17: ❌ Admin asigna estado a cancha",
+          "RF-18: ❌ Socio visualiza historial de turnos propios",
+          "RF-19: ❌ Admin registra pago de turno de no socio",
+          "RF-23: ❌ Buscar socios en listado de cuotas",
+          "RF-31: ❌ Filtrar historial de cuotas por fecha y monto",
+          "RF-32: ❌ Visualizar estadísticas generales",
+          "RF-33: ❌ Admin registra pago de luz",
+          "RF-34: ❌ Admin registra franja horaria de funcionamiento",
+          "RF-35: ❌ Admin modifica franja horaria de funcionamiento",
+          "RF-36: ❌ Consultar todos los turnos vigentes",
+          "RF-37: ❌ Buscar turnos por nombre y apellido",
+          "RF-38: ❌ Consultar turnos filtrados por fecha",
+          "RF-39: ❌ Confirmar reserva de turno con/sin luz",
+          "RF-40: ❌ Usuario cancela turno desde interfaz",
+          "RF-41: ❌ Filtrar cuotas por fecha de generación",
+          "RF-42: ❌ Registrar pago de cuota manualmente (admin panel)",
+          "RF-43: ❌ Consultar valores actuales de turnos, luz, cuotas",
+          "RF-44: ❌ Historial de pagos de luz",
+          "RF-45: ❌ Estadísticas financieras",
+          "RF-46: ❌ Cerrar sesión (logout)"
+        ]
+      }
+    },
+    "reglas_de_negocio_status": {
+      "rn_implementadas": {
+        "total": 2,
+        "detalles": [
+          "RN-5: ✅ Los roles no pueden ser modificados por usuarios (Auth guard en endpoint PATCH /usuario/:id/rol - @Auth(Rol.ADMIN))",
+          "RN-6: ✅ Solo usuarios registrados (requiere JWT token válido para reservar - aunque RN falta el módulo de reservas)"
+        ]
+      },
+      "rn_parcialmente_implementadas": {
+        "total": 3,
+        "detalles": [
+          "RN-4: Cambio de estado solo por Admin - parcialmente en EstadoUsuario (métodos stub)",
+          "RN-8: Usuarios envían recibos por WhatsApp - mencionado pero no integrado",
+          "RN-10: Admin sin restricción de turnos - falta módulo de validaciones de turnos"
+        ]
+      },
+      "rn_no_implementadas": {
+        "total": 6,
+        "detalles": [
+          "RN-1: ❌ Turno cancela hasta 1 hora antes",
+          "RN-2: ❌ Usuario máx. 2 turnos por día",
+          "RN-3: ✅ Pagos parciales de cuotas (soporte en modelo + LineaDeCuota)",
+          "RN-7: ✅ Reservas solo web (no existe sistema externo)",
+          "RN-9: ❌ Morosidad: 2+ meses adeudados = máx. 1 turno adicional",
+          "RN-11: ❌ Turnos máx. 24hs de anticipación"
+        ]
+      }
+    },
+    "resumen_ejecutivo": {
+      "porcentaje_implementacion_general": "32%",
+      "modulos_funcionales": 6,
+      "modulos_totales": 13,
+      "endpoints_rest_funcionales": 58,
+      "endpoints_rest_totales_en_stubs": 85,
+      "rf_implement_porcent": "33%",
+      "rn_implement_porcent": "27%",
+      "areas_criticas_pendientes": [
+        "Sistema de Reservas/Turnos (RF-12-18, RF-36-40) - 0% IMPLEMENTADO",
+        "Configuración de Club (RF-15-17, RF-34-35) - 0% IMPLEMENTADO",
+        "Validaciones de Negocio (RN-1, RN-2, RN-9, RN-11) - 0% IMPLEMENTADO",
+        "Logout/Cierre de Sesión (RF-46) - 0% IMPLEMENTADO",
+        "Reportes y Estadísticas (RF-32, RF-45) - 0% IMPLEMENTADO",
+        "Generación Automática de Cuotas (RF-20) - COMENTADO SIN TERMINAR",
+        "Búsquedas y Filtros Avanzados - PARCIALMENTE IMPLEMENTADO"
+      ],
+      "fortalezas": [
+        "Módulo de autenticación y gestión de roles bien estruturado con historial",
+        "Entidades Prisma bien diseñadas con relaciones apropiadas",
+        "Integración con Notion completa y funcional",
+        "Estructura modular con servicios y controladores separados",
+        "Manejo de transacciones para cambios de rol"
+      ],
+      "debilidades": [
+        "Foca muy centrada en gestión de usuarios/cuotas, apenas inicio en reservas",
+        "Métodos stub sin implementación real en varios módulos",
+        "Falta validación de reglas de negocio críticas (morosidad, límite diario de turnos)",
+        "No hay generación automática de datos (cuotas mensuales)",
+        "DTOs y validaciones incompletas en varios módulos",
+        "Guardias de autorización insuficientes en algunos endpoints"
+      ]
+    }
+  }
+}

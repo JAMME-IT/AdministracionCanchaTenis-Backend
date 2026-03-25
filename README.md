@@ -1,98 +1,341 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🎾 Backend Administración Cancha Tenis
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sistema de administración integral para club de tenis con funcionalidades de reservas, gestión de socios, cuotas y reportes financieros.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📊 Estado del Proyecto
 
-## Description
+| Aspecto | Estado | Progreso |
+|---------|--------|----------|
+| **Autenticación & Usuarios** | ✅ Completado | 100% |
+| **Base de Datos (Prisma)** | ✅ Completado | 100% |
+| **Turnos/Reservas** | ❌ No iniciado | 0% |
+| **Canchas** | ❌ No iniciado | 0% |
+| **Iluminación** | ❌ No iniciado | 0% |
+| **Configuración Club** | ❌ No iniciado | 0% |
+| **Reportes** | ❌ No iniciado | 0% |
+| **Overall** | 🟡 En desarrollo | **32%** (15/46 RF) |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Inicio Rápido
 
-## Project setup
+### Requisitos Previos
+- Node.js 18+ 
+- MySQL 8.0+
+- Docker & Docker Compose (opcional, para base de datos)
+
+### Instalación
 
 ```bash
-$ npm install
+# Clonar repositorio
+git clone <repo-url>
+cd AdministracionCanchaTenis-Backend
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tu configuración local
+
+# Iniciar base de datos (Docker)
+docker-compose up -d
+
+# Aplicar migraciones Prisma
+npx prisma migrate dev
+
+# Iniciar servidor en modo desarrollo
+npm run start:dev
 ```
 
-## Compile and run the project
+### Acceso a la API
+
+- **URL:** http://localhost:3000/api/v1
+- **Swagger Docs:** http://localhost:3000/docs
+- **Prisma Studio:** `npx prisma studio`
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── auth/                 # ✅ Registro, Login, JWT
+├── usuario/              # ✅ CRUD de usuarios completo
+├── rol/                  # ✅ Gestión de roles
+├── cuota/                # ⚠️ Parcial (auto-gen comentado)
+├── linea-cuota/          # ✅ Pagos/líneas de cuota
+├── valor-cuota/          # ✅ Historial de tarifas
+├── socio/                # ⚠️ Stub sin lógica completa
+├── estado-cuota/         # ⚠️ Solo crear()
+├── estado-usuario/       # ⚠️ Stub sin lógica  
+├── notion/               # ✅ Integración Notion API
+├── app.module.ts         # Módulo principal
+├── main.ts              # Bootstrap de NestJS
+└── common/               # Utilidades, guards, pipes
+
+prisma/
+├── schema.prisma        # Definición de modelos
+└── migrations/          # Historial de cambios BD
+```
+
+## 🔑 Módulos Implementados
+
+### ✅ Autenticación (RF-1, RF-2)
+```bash
+POST /auth/register     # Registrar nuevo usuario
+POST /auth/login        # Login y obtener JWT
+GET  /auth/profile      # Perfil del usuario autenticado
+```
+
+**Features:**
+- Encriptación bcrypt
+- JWT con expiración 1 día
+- Guards para rutas protegidas
+- Validación DTO
+
+---
+
+### ✅ Usuarios (RF-3 a RF-7, RF-9 a RF-11)
+```bash
+POST   /usuario         # Crear usuario (solo admin)
+GET    /usuario         # Listar todos
+GET    /usuario/:id     # Obtener uno
+PATCH  /usuario/:id     # Editar perfil
+DELETE /usuario/:id     # Soft delete (baja lógica)
+PATCH  /usuario/:id/rol # Cambiar rol (solo admin)
+```
+
+**Features:**
+- RBAC (Roles: Admin, Socio, NoSocio)
+- Soft delete con EstadoUsuario
+- Historial de cambios de rol
+- Validaciones de email único
+
+---
+
+### ✅ Roles (RF-11)
+```bash
+GET    /rol             # Listar roles disponibles  
+POST   /rol             # Crear rol (admin)
+GET    /rol/:id         # Detalles
+PATCH  /rol/:id         # Editar (admin)
+```
+
+---
+
+### ✅ Cuotas & Pagos (RF-20 a RF-30)
+```bash
+GET    /cuota           # Listar cuotas (con filtros)
+GET    /cuota/:id       # Detalles de cuota
+POST   /linea-cuota     # Registrar pago
+PATCH  /valor-cuota     # Modificar tarifa (admin)
+GET    /valor-cuota/historial # Ver cambios
+```
+
+**Features:**
+- Auto-generación mensual (commented, necesita cron)
+- Historial de tarifas
+- Registro de pagos parciales
+- Estado de deuda por usuario
+
+---
+
+### ✅ Notion Integration
+```bash
+GET    /notion/tasks    # Obtener tareas del tablero
+POST   /notion/task     # Crear tarea
+PATCH  /notion/task/:id # Actualizar tarea
+DELETE /notion/task/:id # Eliminar tarea
+```
+
+**Features:**
+- Sincronización con Notion Database
+- Mapeo automático de propiedades
+- Útil para task management del equipo
+
+---
+
+## ⚠️ Módulos en Desarrollo
+
+### 🔴 CRÍTICO: Turnos/Reservas (RF-12 a RF-40)
+**Estado:** No iniciado (0%)  
+**Prioridad:** MÁXIMA - Bloquea todo
+
+Incluye:
+- Creación de turnos
+- Validaciones (RN-1, RN-2, RN-11)
+- Cálculo de costos
+- Disponibilidad temporal
+- Cancelaciones
+
+---
+
+### 🔴 CRÍTICO: Canchas (RF-17)
+**Estado:** No iniciado (0%)  
+**Prioridad:** MÁXIMA - Bloquea Turnos
+
+Incluye:
+- CRUD de canchas
+- Estados (disponible, inhabilitada)
+- Endpoint de disponibilidad
+
+---
+
+### 🔴 CRÍTICO: Iluminación (RF-16, RF-28, RF-33)
+**Estado:** No iniciado (0%)  
+**Prioridad:** MÁXIMA - Bloquea Turnos
+
+Incluye:
+- Tarifas de iluminación
+- Franjas horarias con luz
+- Cálculo automático de costos
+
+---
+
+### 🟡 IMPORTANTE: Configuración (RF-34, RF-35)
+**Estado:** No iniciado (0%)  
+**Prioridad:** ALTA
+
+Incluye:
+- Horarios de funcionamiento
+- Duración de turnos configurable
+- Días de cierre
+
+---
+
+### 🟡 IMPORTANTE: Validaciones & Morosidad (RN-1 a RN-11)
+**Estado:** Parcial (0%)  
+**Prioridad:** ALTA
+
+Incluye:
+- Control de morosidad
+- Límites de reservas
+- Anticipación mínima
+- Cancellaciones
+
+---
+
+## 🗄️ Base de Datos
+
+### Modelos Prisma
+
+```prisma
+Usuario          # Usuarios del sistema
+Rol              # Roles (Admin, Socio, NoSocio)
+UsuarioRol       # Historial de cambios de rol
+Socio            # Perfil específico de socios
+Cuota            # Cuota mensual
+LineaDeCuota     # Líneas de pago (pagos parciales)
+ValorCuota       # Historial de tarifas
+EstadoCuota      # Estado de cada cuota (Pagada, Pendiente, Parcial)
+EstadoUsuario    # Estado del usuario (Activo, Inactivo)
+```
+
+### Migraciones
 
 ```bash
-# development
-$ npm run start
+# Lista de migraciones aplicadas
+npx prisma migrate status
 
-# watch mode
-$ npm run start:dev
+# Crear nueva migración (después de editar schema.prisma)
+npx prisma migrate dev --name descripcion
 
-# production mode
-$ npm run start:prod
+# Aplicar migraciones en producción
+npx prisma migrate deploy
 ```
 
-## Run tests
+## 🔐 Seguridad
+
+### Autenticación
+- [x] JWT con rol-based access (RBAC)
+- [x] Contraseñas hasheadas con bcrypt
+- [x] Guards para rutas protegidas
+- [ ] Rate limiting (TODO)
+- [ ] 2FA (TODO)
+
+### Validaciones
+- [x] DTO validation con class-validator
+- [x] Sanitización de inputs
+- [ ] CORS configurado (TODO)
+- [ ] Helmet.js (TODO)
+
+## 📚 Documentación
+
+### Instrucciones Internas
+- [📜 Copilot Instructions](./.github/instructions/copilot-instructions.md) - Especificaciones técnicas, reglas de negocio, RF-1 a RF-46
+- [📖 Documentación](./.github/instructions/documentacion.md) - Guía completa con ejemplos
+
+### APIs & Recursos
+- **Swagger:** http://localhost:3000/docs
+- **Notion Board:** [Tu tablero Notion]
+- **Database Docs:** [Ver schema.prisma](./prisma/schema.prisma)
+
+## 🤝 Contribuidores
+
+- **Team:** 5 Desarrolladores BackEnd
+- **Product Owner:** [Especificar]
+- **Tech Lead:** [Especificar]
+
+---
+
+**Última actualización:** 2026-03-20  
+**Versión:** 0.32.0 (32% complete)  
+**Próxima revisión:** Después de completar módulos CRÍTICO
 
 ```bash
-# unit tests
-$ npm run test
+# Tests unitarios
+npm test
 
-# e2e tests
-$ npm run test:e2e
+# Tests con coverage
+npm test -- --coverage
 
-# test coverage
-$ npm run test:cov
+# E2E tests
+npm run test:e2e
+
+# Watch mode
+npm test -- --watch
 ```
 
-## Deployment
+## 📦 Reproducción de Issues
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1. Asegúrate de tener `.env` configurado
+2. Base de datos sincronizada: `npx prisma migrate dev`
+3. Servidor corriendo: `npm run start:dev`
+4. Usa Swagger para testear endpoints
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Reporta issues con:
+- Pasos para reproducir
+- Código exacto que falla
+- Error completo en logs
+- Entorno (Windows/Mac/Linux)
 
+## 🚢 Deploy
+
+### Desarrollo
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Producción
+```bash
+npm run build
+npm run start:prod
+```
 
-## Resources
+### Docker
+```bash
+docker-compose up
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## 📝 Licencia
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Este proyecto es propiedad del Club de Tenis.
 
-## Support
+## 🤝 Contribuidores
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Team:** 5 Desarrolladores BackEnd
+- **Product Owner:** [Especificar]
+- **Tech Lead:** [Especificar]
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Última actualización:** 2026-03-20  
+**Versión:** 0.32.0 (32% complete)  
+**Próxima revisión:** Después de completar módulos CRÍTICO

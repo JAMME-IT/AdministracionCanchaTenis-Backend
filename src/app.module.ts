@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { SocioModule } from './socio/socio.module';
 import { EstadoUsuarioModule } from './estado-usuario/estado-usuario.module';
 import { RolModule } from './rol/rol.module';
+import { NotionModule } from './notion/notion.module';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { RolModule } from './rol/rol.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule, AuthModule, SocioModule, EstadoUsuarioModule, RolModule],
+    CuotaModule, LineaCuotaModule, ValorCuotaModule, UsuarioModule, PrismaModule, EstadoCuotaModule, AuthModule, SocioModule, EstadoUsuarioModule, RolModule, NotionModule],
   controllers: [AppController],
   providers: [AppService],
 })
