@@ -203,8 +203,4 @@ git status ✅
 
 # 7. Push seguro
 git push origin feature/tu-rama ✅
-```
 
----
-
-**Con esta estrategia, el equipo de 5 trabajará con máxima productividad, evitando conflictos, manteniendo calidad y permitiendo que todos aprendan de todo el codebase.** 🚀
