@@ -94,7 +94,7 @@ model Rol {
 model UsuarioRol {
   idUsuario   Int
   idRol       Int
-  fechaInicio DateTime  @default(now()) @db.Date
+  fechaInicio DateTime  @default(now())
   fechaFin    DateTime? @db.Date
   usuario     Usuario   @relation(fields: [idUsuario], references: [id])
   rol         Rol       @relation(fields: [idRol], references: [id])
@@ -122,7 +122,7 @@ model ValorCuota {
 
 model Cuota {
   id               Int            @id @default(autoincrement())
-  fechaInicio      DateTime       @db.Date
+  fechaInicio      DateTime       @default(now())
   fechaVencimiento DateTime       @db.Date
   montoTotal       Decimal        @default(0) @db.Decimal(10, 2)
   idUsuario        Int
@@ -151,7 +151,7 @@ model EstadoCuota {
 
 model LineaDeCuota {
   id         Int      @id @default(autoincrement())
-  fechaPago  DateTime @db.Date
+  fechaPago  DateTime @default(now())
   monto      Decimal  @db.Decimal(10, 2)
   estado     Int
   metodoPago String   @db.VarChar(30)
